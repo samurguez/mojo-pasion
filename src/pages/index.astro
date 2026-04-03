@@ -8,10 +8,25 @@ import '../styles/global.css';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mojo Pasión — Mojo rojo palmero artesano</title>
   </head>
-  <body>
-    <main>
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('header');
 
-      <!-- HERO -->
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('visible');
+      } else {
+        header.classList.remove('visible');
+      }
+    });
+  });
+</script>
+  <body>
+  <header class="header" id="header">
+      <img src="/images/logo-horizontal.png" alt="Mojo Pasión" class="header-logo" />
+      <a href="#cta" class="header-cta">Comprar</a>
+    </header>
+    <!-- HERO -->
       <section class="hero">
         <img src="/images/hero.jpg" alt="Mojo Pasión" class="hero-img" />
         <div class="hero-content">
@@ -25,10 +40,12 @@ import '../styles/global.css';
       <section class="ingrediente">
         <img src="/images/pimienta.jpg" alt="Pimienta palmera de Puntagorda" class="ingrediente-img" />
         <div class="ingrediente-content derecha">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">La pimienta palmera lo cambia todo.</h2>
-            <p class="ingrediente-sub">La que las abuelas guardaban para el mojo de casa.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">La pimienta palmera lo cambia todo.</h2>
+              <p class="ingrediente-sub">La que las abuelas guardaban para el mojo de casa.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -37,10 +54,12 @@ import '../styles/global.css';
       <section class="ingrediente">
         <img src="/images/sal.jpg" alt="Sal marina de Fuencaliente" class="ingrediente-img" />
         <div class="ingrediente-content izquierda">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">El ingrediente que nadie nombra.</h2>
-            <p class="ingrediente-sub">Sal marina de Fuencaliente, La Palma.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">El ingrediente que nadie nombra.</h2>
+              <p class="ingrediente-sub">Sal marina de Fuencaliente, La Palma.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -49,22 +68,26 @@ import '../styles/global.css';
       <section class="ingrediente">
         <img src="/images/aceite.jpg" alt="Aceite de oliva" class="ingrediente-img" />
         <div class="ingrediente-content derecha">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">Hay debate en el aceite.</h2>
-            <p class="ingrediente-sub">El nuestro es de oliva.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">Hay debate en el aceite.</h2>
+              <p class="ingrediente-sub">El nuestro es de oliva.</p>
+            </div>
           </div>
         </div>
       </section>
 
-     <!-- AJO DEL PAÍS -->
+      <!-- AJO DEL PAÍS -->
       <section class="ingrediente">
         <img src="/images/ajo.jpg" alt="Ajo del país" class="ingrediente-img" style="object-position: center bottom;" />
         <div class="ingrediente-content izquierda">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">Pequeño. Imperfecto. Insustituible.</h2>
-            <p class="ingrediente-sub">Ajo del país. El que sabe de verdad.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">Pequeño. Imperfecto. Insustituible.</h2>
+              <p class="ingrediente-sub">Ajo del país. El que sabe de verdad.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -73,10 +96,12 @@ import '../styles/global.css';
       <section class="ingrediente">
         <img src="/images/comino.jpg" alt="Comino" class="ingrediente-img" />
         <div class="ingrediente-content derecha">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">Discreto. Imprescindible.</h2>
-            <p class="ingrediente-sub">El comino lo redondea todo.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">Discreto. Imprescindible.</h2>
+              <p class="ingrediente-sub">El comino lo redondea todo.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -85,15 +110,55 @@ import '../styles/global.css';
       <section class="ingrediente">
         <img src="/images/manos.jpg" alt="Las manos de quien lo hace" class="ingrediente-img" />
         <div class="ingrediente-content izquierda">
-          <div class="ingrediente-barra"></div>
           <div class="ingrediente-texto">
-            <h2 class="ingrediente-title">Hay un ingrediente que no se puede comprar.</h2>
-            <p class="ingrediente-sub">Las manos de quien lleva cincuenta años haciéndolo.</p>
+            <div class="ingrediente-barra"></div>
+            <div class="ingrediente-copy">
+              <h2 class="ingrediente-title">Hay un ingrediente que no se puede comprar.</h2>
+              <p class="ingrediente-sub">Las manos de quien lleva cincuenta años haciéndolo.</p>
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- CTA -->
+      <section class="cta">
+        <div class="cta-content">
+          <p class="cta-label">Mojo rojo palmero artesano</p>
+          <h2 class="cta-title">La receta ya está.</h2>
+          <p class="cta-subtitle">El mojo a la venta, casi.</p>
+          <form class="cta-form">
+            <input type="email" placeholder="Tu email" class="cta-input" />
+            <button type="submit" class="cta-btn">Avísame</button>
+          </form>
+          <p class="cta-note">Sin spam. Solo mojo.</p>
+        </div>
+
+        <div class="cta-divider"></div>
+
+        <div class="cta-content">
+          <h2 class="cta-title-b">¿Quieres probarlo antes que nadie?</h2>
+          <p class="cta-subtitle">Estamos explorando sinergias con personas que valoran el mojo como producto artesanal y canario. ¿Eres uno de ellos?</p>
+          <a href="mailto:hola@mojopasion.com" class="cta-btn-b">Escríbenos</a>
+        </div>
+      </section>
+
     </main>
+	<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('header');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll < lastScroll && currentScroll > 50) {
+        header.classList.add('visible');
+      } else {
+        header.classList.remove('visible');
+      }
+      lastScroll = currentScroll;
+    });
+  });
+</script>
   </body>
 </html>
 
@@ -166,23 +231,29 @@ import '../styles/global.css';
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     background: rgba(17, 17, 17, 0.85);
-    max-width: 480px;
-    padding: 1.5rem;
-    gap: 1rem;
+    max-width: 560px;
   }
 
   .ingrediente-content.izquierda {
-    left: 2.5rem;
-    flex-direction: row;
+    left: 0;
   }
 
   .ingrediente-content.derecha {
-    right: 2.5rem;
-    flex-direction: row-reverse;
+    right: 0;
+  }
+
+  .ingrediente-texto {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding: 2rem 2rem;
+  }
+
+  .ingrediente-copy {
+    flex: 1;
+    padding: 0 1.5rem;
   }
 
   .ingrediente-barra {
@@ -190,14 +261,10 @@ import '../styles/global.css';
     background: var(--color-rojo);
     flex-shrink: 0;
     align-self: stretch;
-    margin: 0 0.5rem;
+    min-height: 80px;
   }
 
-  .ingrediente-texto {
-    padding: 0.5rem 0;
-  }
-
- .ingrediente-title {
+  .ingrediente-title {
     font-family: var(--font-serif);
     font-size: clamp(38px, 3.2vw, 58px);
     font-weight: 400;
@@ -214,5 +281,168 @@ import '../styles/global.css';
     color: #AAAAAA;
     line-height: 1.7;
     letter-spacing: 1.2px;
+  }
+
+  .cta {
+    background: #111111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    padding: 6rem 2rem;
+  }
+
+  .cta-content {
+    text-align: center;
+    max-width: 560px;
+  }
+
+  .cta-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-title {
+    font-family: var(--font-serif);
+    font-size: clamp(42px, 5vw, 72px);
+    font-weight: 400;
+    color: var(--color-crema);
+    line-height: 1.05;
+    margin-bottom: 0.25rem;
+  }
+
+  .cta-title-b {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-crema);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .cta-subtitle {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 2.5vw, 32px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--color-gris);
+    line-height: 1.2;
+    margin-bottom: 2.5rem;
+  }
+
+  .cta-form {
+    display: flex;
+    gap: 0;
+    max-width: 420px;
+    margin: 0 auto 1rem;
+  }
+
+  .cta-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: #1a1a1a;
+    border: 0.5px solid #333333;
+    border-right: none;
+    color: var(--color-crema);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+  }
+
+  .cta-input::placeholder {
+    color: #555555;
+  }
+
+  .cta-btn {
+    padding: 1rem 2rem;
+    background: var(--color-rojo);
+    border: none;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .cta-btn-b {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: transparent;
+    border: 0.5px solid #444444;
+    color: var(--color-crema);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .cta-note {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    color: #444444;
+    letter-spacing: 1px;
+  }
+
+  .cta-divider {
+    width: 1px;
+    height: 60px;
+    background: #333333;
+  }
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 3rem;
+    background: #111111;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .header.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .header-logo {
+    height: 50px;
+    width: auto;
+  }
+  .header-cta {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    border: 0.5px solid #444444;
+    padding: 0.6rem 1.5rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .header-cta:hover {
+    border-color: var(--color-rojo);
+    color: var(--color-rojo);
   }
 </style>
