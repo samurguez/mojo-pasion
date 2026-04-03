@@ -1,17 +1,78 @@
 ---
-
+import '../styles/global.css';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mojo Pasión — Mojo rojo palmero artesano</title>
+  </head>
+  <body>
+    <main>
+
+      <!-- HERO -->
+      <section class="hero">
+        <img src="/images/hero.jpg" alt="Mojo Pasión" class="hero-img" />
+        <div class="hero-content">
+          <p class="hero-small">Mojo rojo palmero artesano</p>
+          <h1 class="hero-title">El mojo que no se vende.</h1>
+          <p class="hero-subtitle">Hasta ahora.</p>
+        </div>
+      </section>
+
+    </main>
+  </body>
 </html>
+
+<style>
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 6%;
+    transform: translateY(-50%);
+    max-width: 560px;
+  }
+
+  .hero-small {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(56px, 7vw, 96px);
+    font-weight: 400;
+    color: var(--color-crema);
+    line-height: 1.05;
+    margin-bottom: 0.25rem;
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-serif);
+    font-size: clamp(56px, 7vw, 96px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-rojo);
+    line-height: 1.05;
+  }
+</style>

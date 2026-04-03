@@ -1,0 +1,33 @@
+@import '@fontsource/cormorant-garamond/300.css';
+@import '@fontsource/cormorant-garamond/300-italic.css';
+@import '@fontsource/cormorant-garamond/400.css';
+@import '@fontsource/cormorant-garamond/400-italic.css';
+@import '@fontsource/dm-sans/300.css';
+@import '@fontsource/dm-sans/400.css';
+
+:root {
+  --color-negro: #111111;
+  --color-negro-calido: #1a1212;
+  --color-rojo: #E8002D;
+  --color-crema: #F5EDD8;
+  --color-madera: #5C3D1E;
+  --color-gris: #888888;
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'DM Sans', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--color-negro);
+  color: var(--color-crema);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 300;
+}
