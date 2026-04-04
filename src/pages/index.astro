@@ -33,6 +33,7 @@ import '../styles/global.css';
           <p class="hero-small">Mojo rojo palmero artesano</p>
           <h1 class="hero-title">El mojo que no se vende.</h1>
           <p class="hero-subtitle">Hasta ahora.</p>
+<a href="#cta" class="hero-cta">Comprar</a>
         </div>
       </section>
 
@@ -213,6 +214,27 @@ import '../styles/global.css';
     line-height: 1.05;
   }
 
+.hero-cta {
+    display: inline-block;
+    margin-top: 2rem;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    background: rgba(17, 17, 17, 0.85);
+    border: 0.5px solid #444444;
+    padding: 0.75rem 2rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .hero-cta:hover {
+    border-color: var(--color-rojo);
+    color: var(--color-rojo);
+  }
+
   .ingrediente {
     position: relative;
     width: 100%;
@@ -284,7 +306,7 @@ import '../styles/global.css';
   }
 
   .cta {
-    background: #111111;
+    background: rgba(17, 17, 17, 0.85);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
