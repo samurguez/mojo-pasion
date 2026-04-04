@@ -136,11 +136,15 @@ import '../styles/global.css';
 
         <div class="cta-divider"></div>
 
-        <div class="cta-content">
-          <h2 class="cta-title-b">¿Quieres probarlo antes que nadie?</h2>
-          <p class="cta-subtitle">El mojo que no se vende quiere decir muchas cosas. Si lo entiendes, eres de los nuestros.</p>
-          <a href="mailto:hola@mojopasion.com" class="cta-btn-b">Escríbenos</a>
+        <div class="cta-papa">
+          <img src="/images/papa.jpg" alt="Papa negra con mojo" class="cta-papa-img" />
+          <div class="cta-papa-content">
+            <h2 class="hero-title">¿Quieres una muestra?</h2>
+            <p class="papa-subtitle">El mojo que no se vende quiere decir muchas cosas. Si lo entiendes, eres de los nuestros.</p>
+            <a href="mailto:hola@mojopasion.com" class="hero-cta">Escríbenos</a>
+          </div>
         </div>
+
       </section>
 
     </main>
@@ -160,6 +164,21 @@ import '../styles/global.css';
     });
   });
 </script>
+
+<!-- FOOTER -->
+      <footer class="footer">
+        <div class="footer-row">
+          <img src="/images/logo-horizontal.png" alt="Mojo Pasión" class="footer-logo" />
+          <div class="footer-links">
+            <a href="/aviso-legal" class="footer-link">Aviso legal</a>
+            <a href="/privacidad" class="footer-link">Política de privacidad</a>
+            <a href="https://instagram.com/mojo_pasion" target="_blank" class="footer-social-link">Instagram</a>
+            <a href="https://tiktok.com/@mojopasion" target="_blank" class="footer-social-link">TikTok</a>
+          </div>
+          <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+
   </body>
 </html>
 
@@ -420,6 +439,36 @@ import '../styles/global.css';
     letter-spacing: 1px;
   }
 
+.cta-papa {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .cta-papa-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+  }
+
+  .cta-papa-content {
+    position: absolute;
+    top: 50%;
+    left: 6%;
+    transform: translateY(-50%);
+    max-width: 600px;
+  }
+.papa-subtitle {
+    font-family: var(--font-serif);
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-rojo);
+    line-height: 1.15;
+    margin-bottom: 2rem;
+  }
   .cta-divider {
     width: 1px;
     height: 60px;
@@ -466,5 +515,65 @@ import '../styles/global.css';
   .header-cta:hover {
     border-color: var(--color-rojo);
     color: var(--color-rojo);
+  }
+  .footer {
+    background: #0a0a0a;
+    padding: 1.5rem 3rem;
+    border-top: 0.5px solid #222222;
+  }
+
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .footer-logo {
+    height: 32px;
+    width: auto;
+    opacity: 0.8;
+  }
+
+  .footer-link {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #666666;
+    text-decoration: none;
+  }
+
+  .footer-link:hover {
+    color: var(--color-crema);
+  }
+
+  .footer-social-link {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #666666;
+    text-decoration: none;
+  }
+
+  .footer-social-link:hover {
+    color: var(--color-rojo);
+  }
+
+  .footer-copy {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 300;
+    color: #444444;
+    letter-spacing: 1px;
   }
 </style>
