@@ -7,6 +7,22 @@ import '../styles/global.css';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mojo Pasión — Mojo rojo palmero artesano</title>
+	<script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      window.mojoCookiesAccepted = false;
+
+      function loadGA() {
+        if (window.mojoCookiesAccepted) return;
+        window.mojoCookiesAccepted = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
+        s.async = true;
+        document.head.appendChild(s);
+        gtag('config', 'G-4K3BK6E95M');
+      }
+    </script>
   </head>
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
@@ -176,7 +192,33 @@ import '../styles/global.css';
           <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
         </div>
       </footer>
+<div class="cookies-banner" id="cookies-banner">
+      <p class="cookies-text">Solo usamos cookies de análisis para mejorar nuestro servicio. Sin publicidad, sin terceros, sin trampa. </p>
+      <div class="cookies-btns">
+        <button class="cookies-accept" onclick="acceptCookies()">Aceptar</button>
+        <button class="cookies-reject" onclick="rejectCookies()">Rechazar</button>
+      </div>
+    </div>
 
+    <script is:inline>
+      function acceptCookies() {
+        localStorage.setItem('mojo-cookies', 'accepted');
+        document.getElementById('cookies-banner').style.display = 'none';
+        loadGA();
+      }
+
+      function rejectCookies() {
+        localStorage.setItem('mojo-cookies', 'rejected');
+        document.getElementById('cookies-banner').style.display = 'none';
+      }
+
+      if (localStorage.getItem('mojo-cookies') === 'accepted') {
+        loadGA();
+        document.getElementById('cookies-banner').style.display = 'none';
+      } else if (localStorage.getItem('mojo-cookies') === 'rejected') {
+        document.getElementById('cookies-banner').style.display = 'none';
+      }
+    </script>
   </body>
 </html>
 
@@ -605,7 +647,7 @@ padding: 6rem 2rem;
     }
 
     .ingrediente-title {
-      font-size: clamp(24px, 6vw, 36px);
+      font-size: clamp(28px, 8vw, 44px);
     }
 
     .ingrediente-sub {
@@ -643,7 +685,7 @@ padding: 6rem 2rem;
       text-align: center;
     }
 
-	.cta-papa-content {
+    .cta-papa-content {
       left: 5%;
       right: 5%;
       max-width: 90%;
@@ -673,4 +715,61 @@ padding: 6rem 2rem;
     }
 
   }
+
+  .cookies-banner {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    border: 0.5px solid #333333;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    z-index: 200;
+    max-width: 760px;
+    width: 95%;
+  }
+
+  .cookies-text {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 300;
+    color: #BBBBBB;
+    margin: 0;
+  }
+
+  .cookies-btns {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .cookies-accept {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--color-rojo);
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+  }
+
+  .cookies-reject {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: transparent;
+    color: #666666;
+    border: 0.5px solid #444444;
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+  }
+
 </style>
