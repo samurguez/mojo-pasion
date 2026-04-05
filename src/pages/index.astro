@@ -830,6 +830,10 @@ import '../styles/global.css';
       if (res.ok) {
         form.style.display = 'none';
         document.getElementById('cta-success').style.display = 'block';
+      } else if (res.status === 409) {
+        form.style.display = 'none';
+        document.getElementById('cta-success').innerHTML = 'Ya estás en la lista. Te avisamos cuando esté disponible.';
+        document.getElementById('cta-success').style.display = 'block';
       } else {
         alert('Algo salió mal. Inténtalo de nuevo.');
       }
