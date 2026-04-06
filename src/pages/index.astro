@@ -161,7 +161,7 @@ import '../styles/global.css';
   <input type="email" placeholder="Tu email" class="cta-input" id="waitlist-email" required />
   <button type="submit" class="cta-btn">Avísame</button>
 </form>
-<p class="cta-success" id="cta-success" style="display:none;"><span style="color: var(--color-rojo);">¡Apuntado!</span> Te avisamos cuando esté disponible.</p>
+<p class="cta-success" id="cta-success" style="display:none;"><span style="color: var(--color-rojo);">¡Hecho!</span> Te avisamos en cuanto el mojo esté a la venta.</p>
           <p class="cta-note">Sin spam. Solo mojo.</p>
         </div>
       </section>
@@ -481,9 +481,10 @@ import '../styles/global.css';
     font-weight: 300;
     color: #777777;
     letter-spacing: 1px;
+    margin-top: 1rem;
   }
 
-  .cta-success {
+ .cta-success {
     font-family: var(--font-serif);
     font-size: clamp(20px, 2.5vw, 32px);
     font-weight: 300;
