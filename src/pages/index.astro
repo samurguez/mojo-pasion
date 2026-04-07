@@ -68,7 +68,7 @@ import '../styles/global.css';
       </section>
 
       <!-- PIMIENTA PALMERA -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/pimienta.jpg" alt="Pimienta palmera de Puntagorda" class="ingrediente-img" />
         <div class="ingrediente-content derecha">
           <div class="ingrediente-texto">
@@ -82,7 +82,7 @@ import '../styles/global.css';
       </section>
 
       <!-- SAL DE FUENCALIENTE -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/sal.jpg" alt="Sal marina de Fuencaliente" class="ingrediente-img" />
         <div class="ingrediente-content izquierda">
           <div class="ingrediente-texto">
@@ -96,7 +96,7 @@ import '../styles/global.css';
       </section>
 
       <!-- ACEITE DE OLIVA -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/aceite.jpg" alt="Aceite de oliva" class="ingrediente-img" />
         <div class="ingrediente-content derecha">
           <div class="ingrediente-texto">
@@ -110,7 +110,7 @@ import '../styles/global.css';
       </section>
 
       <!-- AJO DEL PAÍS -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/ajo.jpg" alt="Ajo del país" class="ingrediente-img" style="object-position: center bottom;" />
         <div class="ingrediente-content izquierda">
           <div class="ingrediente-texto">
@@ -124,7 +124,7 @@ import '../styles/global.css';
       </section>
 
       <!-- COMINO -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/comino.jpg" alt="Comino" class="ingrediente-img" style="object-position: 20% center;" />
         <div class="ingrediente-content derecha">
           <div class="ingrediente-texto">
@@ -138,7 +138,7 @@ import '../styles/global.css';
       </section>
 
       <!-- LAS MANOS -->
-      <section class="ingrediente">
+      <section class="ingrediente fade-in">
         <img src="/images/manos.jpg" alt="Las manos de quien lo hace" class="ingrediente-img" />
         <div class="ingrediente-content izquierda">
           <div class="ingrediente-texto">
@@ -152,7 +152,7 @@ import '../styles/global.css';
       </section>
 
       <!-- CTA -->
-      <section class="cta" id="cta">
+      <section class="cta fade-in" id="cta">
         <div class="cta-content">
           <p class="cta-label">Mojo rojo palmero artesano</p>
           <h2 class="cta-title">La receta ya está.</h2>
@@ -167,7 +167,7 @@ import '../styles/global.css';
       </section>
 
       <!-- CTA PAPA -->
-      <section class="cta-papa">
+      <section class="cta-papa fade-in">
         <img src="/images/papa.jpg" alt="Papa negra con mojo" class="cta-papa-img" />
         <div class="cta-papa-content">
           <h2 class="hero-title">¿Quieres una muestra?</h2>
@@ -693,6 +693,17 @@ import '../styles/global.css';
     cursor: pointer;
   }
 
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   @media (max-width: 768px) {
 
     .cookies-banner {
@@ -839,5 +850,32 @@ import '../styles/global.css';
         alert('Algo salió mal. Inténtalo de nuevo.');
       }
     });
+  });
+</script>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('header');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll < lastScroll && currentScroll > 50) {
+        header.classList.add('visible');
+      } else {
+        header.classList.remove('visible');
+      }
+      lastScroll = currentScroll;
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
   });
 </script>
