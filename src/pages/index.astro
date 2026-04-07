@@ -60,9 +60,9 @@ import '../styles/global.css';
       <section class="hero">
         <img src="/images/hero.jpg" alt="Mojo Pasión" class="hero-img" />
         <div class="hero-content">
-          <p class="hero-small">Mojo rojo palmero artesano</p>
-          <h1 class="hero-title">El mojo que no se vende.</h1>
-          <p class="hero-subtitle">Hasta ahora.</p>
+          <p class="hero-small hero-anim hero-anim--0">Mojo rojo palmero artesano</p>
+          <h1 class="hero-title hero-anim hero-anim--03">El mojo que no se vende.</h1>
+          <p class="hero-subtitle hero-anim hero-anim--06">Hasta ahora.</p>
 <a href="#cta" class="hero-cta">Comprar</a>
         </div>
       </section>
@@ -692,6 +692,26 @@ import '../styles/global.css';
     padding: 0.6rem 1.25rem;
     cursor: pointer;
   }
+
+  @keyframes slide-fade-in {
+    from {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .hero-anim {
+    opacity: 0;
+    animation: slide-fade-in 0.7s ease forwards;
+  }
+
+  .hero-anim--0  { animation-delay: 0s; }
+  .hero-anim--03 { animation-delay: 0.3s; }
+  .hero-anim--06 { animation-delay: 0.6s; }
 
   .fade-in {
     opacity: 0;
