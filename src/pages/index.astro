@@ -1,5 +1,9 @@
 ---
 import '../styles/global.css';
+
+import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
+import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
+import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
 ---
 
 <html lang="es">
@@ -7,6 +11,12 @@ import '../styles/global.css';
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Preload fuentes críticas (latin) para evitar render blocking -->
+    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
+
     <title>Mojo Pasión — Mojo rojo palmero artesano</title>
     <meta name="description" content="El mojo que no se vende. Pimienta palmera de Puntagorda, sal de Fuencaliente, receta de familia. Hecho a mano en Canarias." />
 
