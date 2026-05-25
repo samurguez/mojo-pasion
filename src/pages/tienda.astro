@@ -1,0 +1,616 @@
+---
+import '../styles/global.css';
+import StoreHeader from '../components/StoreHeader.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import { PRODUCTS } from '../lib/tienda-config';
+
+import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
+import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
+import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+// Solo los datos que necesita el cliente para el add-to-cart
+const productsForClient = PRODUCTS.map(p => ({
+  priceId: p.priceId,
+  name: p.name,
+  priceInCents: p.priceInCents,
+  priceDisplay: p.priceDisplay,
+}));
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
+
+    <title>Tienda — Mojo Pasión</title>
+    <meta name="description" content="Mojo rojo palmero artesano de Canarias. Suave o picante, hecho a mano con pimienta de Puntagorda y sal de Fuencaliente. Envío a Canarias." />
+    <link rel="canonical" href="https://www.mojopasion.com/tienda" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.mojopasion.com/tienda" />
+    <meta property="og:title" content="Tienda — Mojo Pasión" />
+    <meta property="og:description" content="Mojo rojo palmero artesano. Suave o picante, hecho a mano en Canarias." />
+    <meta property="og:image" content="https://www.mojopasion.com/images/hero.jpg" />
+
+    <!-- Meta Pixel -->
+    <script is:inline>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '982174691398586');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1" />
+    </noscript>
+
+    <!-- GA4 (carga solo tras aceptar cookies) -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      window.mojoCookiesAccepted = false;
+      function loadGA() {
+        if (window.mojoCookiesAccepted) return;
+        window.mojoCookiesAccepted = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
+        s.async = true;
+        document.head.appendChild(s);
+        gtag('config', 'G-4K3BK6E95M');
+      }
+    </script>
+  </head>
+
+  <body>
+    <StoreHeader />
+
+    <main class="tienda-main">
+      <!-- Encabezado de sección -->
+      <div class="tienda-intro">
+        <p class="tienda-label">Tienda</p>
+        <h1 class="tienda-title">Mojo rojo palmero artesano</h1>
+      </div>
+
+      <!-- Grid de productos -->
+      <div class="tienda-grid">
+        {PRODUCTS.map((product) => (
+          <article class="product-card" data-price-id={product.priceId}>
+            <div class="product-img-wrap">
+              {product.badge && (
+                <span class="product-badge">{product.badge}</span>
+              )}
+              <img
+                src={product.image}
+                alt={product.imageAlt}
+                class="product-img"
+                loading="eager"
+                width="800"
+                height="600"
+              />
+            </div>
+
+            <div class="product-body">
+              <p class="product-category">Mojo rojo palmero artesano</p>
+              <h2 class="product-name">{product.name}</h2>
+              <p class="product-tagline">{product.tagline}</p>
+              <p class="product-desc">{product.description}</p>
+
+              <div class="product-bottom">
+                <p class="product-price">{product.priceDisplay}</p>
+
+                <div class="product-qty-wrap" id={`qty-wrap-${product.priceId}`}>
+                  <button
+                    class="product-qty-btn"
+                    data-action="minus"
+                    data-price-id={product.priceId}
+                    aria-label="Reducir cantidad"
+                  >−</button>
+                  <span class="product-qty-val" id={`qty-val-${product.priceId}`}>1</span>
+                  <button
+                    class="product-qty-btn"
+                    data-action="plus"
+                    data-price-id={product.priceId}
+                    aria-label="Aumentar cantidad"
+                  >+</button>
+                </div>
+
+                <button
+                  class="product-add-btn"
+                  data-price-id={product.priceId}
+                  type="button"
+                >
+                  Añadir al carrito
+                </button>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-row">
+        <img
+          src="/images/logo-horizontal.png"
+          alt="Mojo Pasión — mojo rojo palmero artesano canario"
+          class="footer-logo"
+          width="160"
+          height="40"
+        />
+        <div class="footer-links">
+          <a href="/aviso-legal" class="footer-link">Aviso legal</a>
+          <a href="/privacidad" class="footer-link">Política de privacidad</a>
+          <a href="https://instagram.com/mojo_pasion" target="_blank" rel="noopener" class="footer-social-link">Instagram</a>
+          <a href="https://tiktok.com/@mojopasion" target="_blank" rel="noopener" class="footer-social-link">TikTok</a>
+        </div>
+        <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
+      </div>
+    </footer>
+
+    <!-- Cookie banner -->
+    <div class="cookies-banner" id="cookies-banner">
+      <p class="cookies-text">Solo usamos cookies de análisis para mejorar nuestro servicio.</p>
+      <div class="cookies-btns">
+        <button class="cookies-accept" onclick="acceptCookies()">Aceptar</button>
+        <button class="cookies-reject" onclick="rejectCookies()">Rechazar</button>
+      </div>
+    </div>
+
+    <script is:inline>
+      function acceptCookies() {
+        localStorage.setItem('mojo-cookies', 'accepted');
+        document.getElementById('cookies-banner').style.display = 'none';
+        loadGA();
+      }
+      function rejectCookies() {
+        localStorage.setItem('mojo-cookies', 'rejected');
+        document.getElementById('cookies-banner').style.display = 'none';
+      }
+      if (localStorage.getItem('mojo-cookies') === 'accepted') {
+        loadGA();
+        document.getElementById('cookies-banner').style.display = 'none';
+      } else if (localStorage.getItem('mojo-cookies') === 'rejected') {
+        document.getElementById('cookies-banner').style.display = 'none';
+      }
+    </script>
+
+    <CartDrawer />
+
+    <!-- Add-to-cart logic + analytics -->
+    <script define:vars={{ productsForClient }} is:inline>
+      (function () {
+        // Índice de productos para lookup rápido
+        const productMap = {};
+        productsForClient.forEach(p => { productMap[p.priceId] = p; });
+
+        // Cantidad seleccionada por producto
+        const qtys = {};
+        productsForClient.forEach(p => { qtys[p.priceId] = 1; });
+
+        function getQty(priceId) { return qtys[priceId] || 1; }
+        function setQty(priceId, val) {
+          val = Math.max(1, Math.min(20, val));
+          qtys[priceId] = val;
+          const el = document.getElementById('qty-val-' + priceId);
+          if (el) el.textContent = String(val);
+        }
+
+        // Botones +/−
+        document.querySelectorAll('.product-qty-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const priceId = btn.dataset.priceId;
+            const action = btn.dataset.action;
+            setQty(priceId, getQty(priceId) + (action === 'plus' ? 1 : -1));
+          });
+        });
+
+        // Añadir al carrito
+        document.querySelectorAll('.product-add-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const priceId = btn.dataset.priceId;
+            const product = productMap[priceId];
+            const qty = getQty(priceId);
+            if (!product) return;
+
+            window.MojoCart.add(product, qty);
+
+            // Eventos de analítica
+            const value = (product.priceInCents * qty) / 100;
+            if (typeof window.gtag === 'function') {
+              gtag('event', 'add_to_cart', {
+                currency: 'EUR',
+                value: value,
+                items: [{
+                  item_id: product.priceId,
+                  item_name: product.name,
+                  price: product.priceInCents / 100,
+                  quantity: qty,
+                }],
+              });
+            }
+            if (typeof window.fbq === 'function') {
+              fbq('track', 'AddToCart', {
+                content_ids: [product.priceId],
+                content_name: product.name,
+                currency: 'EUR',
+                value: value,
+              });
+            }
+
+            // Resetea selector y abre el carrito
+            setQty(priceId, 1);
+            window.openCart?.();
+          });
+        });
+      })();
+    </script>
+
+    <style>
+      .tienda-main {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--color-negro);
+      }
+
+      .tienda-intro {
+        padding: 4rem 2.5rem 3rem;
+        max-width: 1160px;
+        margin: 0 auto;
+        border-bottom: 0.5px solid #1e1e1e;
+      }
+
+      .tienda-label {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 0.75rem;
+      }
+
+      .tienda-title {
+        font-family: var(--font-serif);
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--color-crema);
+        line-height: 1.1;
+      }
+
+      .tienda-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+        max-width: 1160px;
+        margin: 0 auto;
+      }
+
+      .product-card {
+        display: grid;
+        grid-template-columns: 1fr;
+        border-bottom: 0.5px solid #1e1e1e;
+      }
+
+      .product-img-wrap {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        background: #0d0d0d;
+      }
+
+      .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 0.5s ease;
+      }
+
+      .product-card:hover .product-img {
+        transform: scale(1.03);
+      }
+
+      .product-badge {
+        position: absolute;
+        top: 1.25rem;
+        left: 1.25rem;
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--color-rojo);
+        padding: 0.3rem 0.75rem;
+        z-index: 1;
+      }
+
+      .product-body {
+        padding: 2rem 2.5rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .product-category {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 300;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 0.75rem;
+      }
+
+      .product-name {
+        font-family: var(--font-serif);
+        font-size: clamp(34px, 4vw, 52px);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--color-crema);
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-tagline {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--color-gris);
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+      }
+
+      .product-desc {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #666;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+      }
+
+      .product-bottom {
+        margin-top: auto;
+      }
+
+      .product-price {
+        font-family: var(--font-serif);
+        font-size: 28px;
+        font-weight: 400;
+        color: var(--color-crema);
+        margin-bottom: 1.25rem;
+      }
+
+      .product-qty-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 1rem;
+        width: fit-content;
+        border: 0.5px solid #2a2a2a;
+      }
+
+      .product-qty-btn {
+        background: none;
+        border: none;
+        color: var(--color-crema);
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+        font-family: var(--font-sans);
+      }
+
+      .product-qty-btn:hover {
+        color: var(--color-rojo);
+      }
+
+      .product-qty-val {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--color-crema);
+        width: 40px;
+        text-align: center;
+        border-left: 0.5px solid #2a2a2a;
+        border-right: 0.5px solid #2a2a2a;
+        line-height: 40px;
+      }
+
+      .product-add-btn {
+        display: block;
+        width: 100%;
+        padding: 1rem 2rem;
+        background: transparent;
+        border: 0.5px solid #444;
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: border-color 0.25s, color 0.25s, background 0.25s;
+        text-align: center;
+      }
+
+      .product-add-btn:hover {
+        background: var(--color-rojo);
+        border-color: var(--color-rojo);
+        color: #fff;
+      }
+
+      /* Footer */
+      .footer {
+        background: #0a0a0a;
+        padding: 1.5rem 2.5rem;
+        border-top: 0.5px solid #1a1a1a;
+      }
+
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .footer-logo { height: 30px; width: auto; opacity: 0.7; }
+
+      .footer-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .footer-link, .footer-social-link {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #555;
+        text-decoration: none;
+      }
+
+      .footer-link:hover { color: var(--color-crema); }
+      .footer-social-link:hover { color: var(--color-rojo); }
+
+      .footer-copy {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 300;
+        color: #333;
+        letter-spacing: 0.5px;
+      }
+
+      /* Cookie banner */
+      .cookies-banner {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1a1a1a;
+        border: 0.5px solid #333;
+        padding: 1.25rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        z-index: 300;
+        max-width: 700px;
+        width: 95%;
+      }
+
+      .cookies-text {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #aaa;
+        margin: 0;
+      }
+
+      .cookies-btns { display: flex; gap: 0.75rem; flex-shrink: 0; }
+
+      .cookies-accept {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: var(--color-rojo);
+        color: #fff;
+        border: none;
+        padding: 0.6rem 1.25rem;
+        cursor: pointer;
+      }
+
+      .cookies-reject {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: transparent;
+        color: #666;
+        border: 0.5px solid #444;
+        padding: 0.6rem 1.25rem;
+        cursor: pointer;
+      }
+
+      /* ── Desktop ── */
+      @media (min-width: 768px) {
+        .tienda-intro {
+          padding: 5rem 3rem 3.5rem;
+        }
+
+        .tienda-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .product-card {
+          border-right: 0.5px solid #1e1e1e;
+          border-bottom: none;
+        }
+
+        .product-card:last-child {
+          border-right: none;
+        }
+
+        .product-body {
+          padding: 2.5rem 3rem 3rem;
+        }
+      }
+
+      /* ── Móvil ── */
+      @media (max-width: 767px) {
+        .tienda-intro {
+          padding: 3rem 1.5rem 2rem;
+        }
+
+        .product-body {
+          padding: 1.5rem 1.5rem 2rem;
+        }
+
+        .footer {
+          padding: 1.5rem;
+        }
+
+        .footer-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .cookies-banner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1rem 1.25rem;
+        }
+
+        .cookies-btns { width: 100%; }
+        .cookies-accept, .cookies-reject {
+          flex: 1;
+          text-align: center;
+        }
+      }
+    </style>
+  </body>
+</html>

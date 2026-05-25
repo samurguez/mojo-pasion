@@ -1,0 +1,239 @@
+---
+import '../styles/global.css';
+import StoreHeader from '../components/StoreHeader.astro';
+
+import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
+import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
+import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
+    <meta name="robots" content="noindex" />
+    <title>¡Pedido recibido! — Mojo Pasión</title>
+
+    <!-- Meta Pixel -->
+    <script is:inline>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '982174691398586');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1" />
+    </noscript>
+
+    <!-- GA4 -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      window.mojoCookiesAccepted = false;
+      function loadGA() {
+        if (window.mojoCookiesAccepted) return;
+        window.mojoCookiesAccepted = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
+        s.async = true;
+        document.head.appendChild(s);
+        gtag('config', 'G-4K3BK6E95M');
+      }
+      if (localStorage.getItem('mojo-cookies') === 'accepted') loadGA();
+    </script>
+  </head>
+
+  <body>
+    <StoreHeader showCart={false} />
+
+    <main class="gracias-main">
+      <div class="gracias-container">
+
+        <div class="gracias-icon" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+
+        <p class="gracias-label">Pedido recibido</p>
+        <h1 class="gracias-title">¡Gracias por<br />tu confianza!</h1>
+
+        <p class="gracias-body">
+          Recibirás la confirmación por email en breve.
+        </p>
+
+        <p id="gracias-delivery-msg" class="gracias-delivery" style="display:none"></p>
+
+        <a href="/tienda" class="gracias-btn">Ver más mojo →</a>
+
+      </div>
+    </main>
+
+    <script is:inline>
+      (function() {
+        // Lee el carrito ANTES de vaciarlo — lo necesitamos para los eventos
+        var cartKey = 'mojo-cart-v1';
+        var items = [];
+        try { items = JSON.parse(localStorage.getItem(cartKey) || '[]'); } catch(e) {}
+
+        var cartTotal = items.reduce(function(s, i) { return s + i.priceInCents * i.quantity; }, 0);
+
+        // session_id de Stripe en la URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var sessionId = urlParams.get('session_id') || 'unknown';
+
+        // Mensaje de entrega personalizado
+        var method = sessionStorage.getItem('mojo-delivery-method');
+        var msgEl = document.getElementById('gracias-delivery-msg');
+        if (msgEl && method) {
+          msgEl.style.display = 'block';
+          if (method === 'shipping') {
+            msgEl.textContent = 'Tu mojo saldrá en breve. El envío puede tardar entre 3 y 7 días.';
+          } else if (method === 'pickup') {
+            var point = sessionStorage.getItem('mojo-pickup-point') || '';
+            msgEl.textContent = 'Te contactaremos para concertar la recogida' + (point ? ' en ' + point : '') + '.';
+          }
+          sessionStorage.removeItem('mojo-delivery-method');
+          sessionStorage.removeItem('mojo-pickup-point');
+        }
+
+        // Vaciar el carrito
+        localStorage.removeItem(cartKey);
+
+        // Eventos de analítica: purchase
+        if (items.length > 0) {
+          var gaItems = items.map(function(i) {
+            return { item_id: i.priceId, item_name: i.name, price: i.priceInCents / 100, quantity: i.quantity };
+          });
+
+          if (typeof window.gtag === 'function') {
+            gtag('event', 'purchase', {
+              transaction_id: sessionId,
+              currency: 'EUR',
+              value: cartTotal / 100,
+              items: gaItems,
+            });
+          }
+
+          if (typeof window.fbq === 'function') {
+            fbq('track', 'Purchase', {
+              value: cartTotal / 100,
+              currency: 'EUR',
+              content_ids: items.map(function(i) { return i.priceId; }),
+              contents: items.map(function(i) { return { id: i.priceId, quantity: i.quantity }; }),
+              num_items: items.reduce(function(s, i) { return s + i.quantity; }, 0),
+            });
+          }
+        }
+      })();
+    </script>
+
+    <style>
+      .gracias-main {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--color-negro);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .gracias-container {
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+        text-align: center;
+      }
+
+      .gracias-icon {
+        width: 64px;
+        height: 64px;
+        border: 0.5px solid rgba(100, 180, 100, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 2rem;
+        color: #90c890;
+      }
+
+      .gracias-label {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 1rem;
+      }
+
+      .gracias-title {
+        font-family: var(--font-serif);
+        font-size: clamp(38px, 6vw, 60px);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--color-crema);
+        line-height: 1.1;
+        margin-bottom: 2rem;
+      }
+
+      .gracias-body {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--color-gris);
+        line-height: 1.7;
+        margin-bottom: 1rem;
+      }
+
+      .gracias-delivery {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+        padding: 0.85rem 1.25rem;
+        border: 0.5px solid #222;
+      }
+
+      .gracias-btn {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.9rem 2.5rem;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--color-crema);
+        border: 0.5px solid #444;
+        transition: border-color 0.2s, color 0.2s;
+      }
+
+      .gracias-btn:hover {
+        border-color: var(--color-rojo);
+        color: var(--color-rojo);
+      }
+
+      @media (max-width: 767px) {
+        .gracias-container {
+          padding: 3rem 1.5rem;
+        }
+      }
+    </style>
+  </body>
+</html>

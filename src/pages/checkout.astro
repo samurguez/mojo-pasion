@@ -1,0 +1,835 @@
+---
+import '../styles/global.css';
+import StoreHeader from '../components/StoreHeader.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
+
+import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
+import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
+import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const checkoutConfig = {
+  shippingZones: SHIPPING_ZONES,
+  pickupPoints: PICKUP_POINTS,
+  productPriceInCents: PRODUCTS[0].priceInCents,
+};
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
+    <meta name="robots" content="noindex" />
+    <title>Finalizar pedido — Mojo Pasión</title>
+
+    <!-- Meta Pixel -->
+    <script is:inline>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '982174691398586');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1" />
+    </noscript>
+
+    <!-- GA4 -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      window.mojoCookiesAccepted = false;
+      function loadGA() {
+        if (window.mojoCookiesAccepted) return;
+        window.mojoCookiesAccepted = true;
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
+        s.async = true;
+        document.head.appendChild(s);
+        gtag('config', 'G-4K3BK6E95M');
+      }
+      if (localStorage.getItem('mojo-cookies') === 'accepted') loadGA();
+    </script>
+  </head>
+
+  <body>
+    <StoreHeader />
+
+    <main class="co-main">
+      <div class="co-container">
+
+        <h1 class="co-page-title">Finalizar pedido</h1>
+
+        <!-- ── Resumen del pedido ── -->
+        <section class="co-section">
+          <h2 class="co-section-title">Tu pedido</h2>
+          <div id="order-summary" class="order-summary">
+            <p class="co-loading">Cargando carrito…</p>
+          </div>
+        </section>
+
+        <!-- ── Formulario de entrega (se muestra si el carrito no está vacío) ── -->
+        <section class="co-section" id="delivery-section" style="display:none">
+          <h2 class="co-section-title">Datos de entrega</h2>
+
+          <!-- Paso 1: Código postal (primer campo, siempre visible) -->
+          <div class="form-group">
+            <label class="form-label" for="postal-code">Código postal *</label>
+            <p class="form-hint">Introduce tu CP para ver las opciones de envío disponibles a tu zona.</p>
+            <input
+              type="text"
+              id="postal-code"
+              class="form-input"
+              maxlength="5"
+              placeholder="38000"
+              inputmode="numeric"
+              autocomplete="postal-code"
+            />
+            <div id="zone-message" class="zone-message" style="display:none" aria-live="polite"></div>
+          </div>
+
+          <!-- Paso 2: Método de entrega (aparece tras CP válido) -->
+          <div id="delivery-options" style="display:none">
+            <div class="form-group">
+              <p class="form-label">¿Cómo quieres recibir tu mojo?</p>
+
+              <div id="opt-shipping" class="delivery-option">
+                <label class="delivery-label" for="method-shipping">
+                  <input type="radio" name="delivery" value="shipping" id="method-shipping" />
+                  <div class="delivery-info">
+                    <span class="delivery-name">Envío a domicilio</span>
+                    <span class="delivery-cost" id="shipping-cost-display">—</span>
+                  </div>
+                </label>
+              </div>
+
+              <div id="opt-pickup" class="delivery-option" style="display:none">
+                <label class="delivery-label" for="method-pickup">
+                  <input type="radio" name="delivery" value="pickup" id="method-pickup" />
+                  <div class="delivery-info">
+                    <span class="delivery-name">Recogida en punto</span>
+                    <span class="delivery-cost delivery-free">Gratis</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detalles de envío (visibles al seleccionar envío) -->
+          <div id="shipping-details" style="display:none">
+            <div id="checkout-incentivo" class="checkout-incentivo" style="display:none" aria-live="polite"></div>
+            <p class="delivery-notice">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:5px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              El envío puede tardar entre 3 y 7 días.
+            </p>
+          </div>
+
+          <!-- Detalles de recogida (visibles al seleccionar recogida) -->
+          <div id="pickup-details" style="display:none">
+            <div class="form-group">
+              <label class="form-label" for="pickup-point">Punto de recogida *</label>
+              <select id="pickup-point" class="form-select">
+                <option value="">Elige punto de recogida</option>
+                {PICKUP_POINTS.map(p => (
+                  <option value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Teléfono de contacto *</label>
+              <input
+                type="tel"
+                id="phone"
+                class="form-input"
+                placeholder="+34 600 000 000"
+                autocomplete="tel"
+              />
+            </div>
+            <p class="delivery-notice">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:5px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Te avisaremos cuando esté disponible y concertaremos una cita de entrega.
+            </p>
+          </div>
+        </section>
+
+        <!-- ── Total + botón de pago ── -->
+        <div id="submit-section" style="display:none">
+          <div class="order-total-row">
+            <span class="order-total-label">Total</span>
+            <strong id="order-total-val" class="order-total-val">—</strong>
+          </div>
+          <button id="submit-btn" class="submit-btn" type="button" disabled>
+            Tramitar pedido →
+          </button>
+          <p id="submit-error" class="submit-error" style="display:none" role="alert"></p>
+          <p class="submit-note">Serás redirigido a Stripe para completar el pago de forma segura.</p>
+        </div>
+
+      </div>
+    </main>
+
+    <CartDrawer />
+
+    <script define:vars={{ checkoutConfig }} is:inline>
+      // ── Estado del formulario ────────────────────────────────────────────
+      var currentZone = null;
+      var shippingCost = 0;
+      var selectedMethod = null;
+
+      function fmtEur(cents) {
+        return (cents / 100).toFixed(2).replace('.', ',') + ' €';
+      }
+
+      // ── Renderiza el resumen del pedido ──────────────────────────────────
+      function renderSummary() {
+        var items = window.MojoCart.get();
+        var summaryEl = document.getElementById('order-summary');
+        var deliveryEl = document.getElementById('delivery-section');
+        var submitEl = document.getElementById('submit-section');
+
+        if (!summaryEl) return;
+
+        if (items.length === 0) {
+          summaryEl.innerHTML =
+            '<p class="co-empty">Tu carrito está vacío. <a href="/tienda" class="co-link">Ir a la tienda →</a></p>';
+          if (deliveryEl) deliveryEl.style.display = 'none';
+          if (submitEl) submitEl.style.display = 'none';
+          return;
+        }
+
+        if (deliveryEl) deliveryEl.style.display = 'block';
+        if (submitEl) submitEl.style.display = 'block';
+
+        var cartTotal = window.MojoCart.total();
+        var html = '<div class="order-items">';
+        items.forEach(function(item) {
+          html += '<div class="order-item">' +
+            '<span class="order-item-name">' + item.name + ' × ' + item.quantity + '</span>' +
+            '<span class="order-item-price">' + fmtEur(item.priceInCents * item.quantity) + '</span>' +
+            '</div>';
+        });
+        html += '</div>';
+        html += '<div class="order-line order-subtotal">' +
+          '<span>Subtotal</span><span>' + fmtEur(cartTotal) + '</span></div>';
+        html += '<div class="order-line" id="shipping-line" style="display:none">' +
+          '<span>Envío</span><span id="shipping-line-cost">—</span></div>';
+        summaryEl.innerHTML = html;
+
+        if (currentZone) recalcShipping();
+        updateTotal();
+      }
+
+      // ── Valida el código postal ──────────────────────────────────────────
+      function validateCP(cp) {
+        var msgEl = document.getElementById('zone-message');
+        if (!msgEl) return;
+
+        var prefix = cp.slice(0, 2);
+
+        if (prefix === checkoutConfig.shippingZones.tenerife.postalPrefix) {
+          currentZone = 'tenerife';
+          msgEl.className = 'zone-message zone-ok';
+          msgEl.textContent = '✓ Tenerife — envío disponible';
+          msgEl.style.display = 'block';
+          showDeliveryOptions(true);
+          recalcShipping();
+        } else if (prefix === checkoutConfig.shippingZones.canarias.postalPrefix) {
+          currentZone = 'canarias';
+          msgEl.className = 'zone-message zone-ok';
+          msgEl.textContent = '✓ Resto de Canarias — envío disponible';
+          msgEl.style.display = 'block';
+          showDeliveryOptions(false);
+          recalcShipping();
+        } else {
+          currentZone = null;
+          msgEl.className = 'zone-message zone-error';
+          msgEl.innerHTML =
+            'De momento solo enviamos a Canarias. ¿Quieres recibir Mojo Pasión en península? Escríbenos a ' +
+            '<a href="mailto:hola@mojopasion.com" class="co-link">hola@mojopasion.com</a>';
+          msgEl.style.display = 'block';
+          hideDeliveryOptions();
+        }
+      }
+
+      function showDeliveryOptions(includePickup) {
+        var el = document.getElementById('delivery-options');
+        var pickupOpt = document.getElementById('opt-pickup');
+        if (el) el.style.display = 'block';
+        if (pickupOpt) pickupOpt.style.display = includePickup ? 'block' : 'none';
+        if (!includePickup && selectedMethod === 'pickup') {
+          selectedMethod = null;
+          var radio = document.getElementById('method-pickup');
+          if (radio) radio.checked = false;
+          document.getElementById('pickup-details').style.display = 'none';
+        }
+        validateBtn();
+      }
+
+      function hideDeliveryOptions() {
+        var el = document.getElementById('delivery-options');
+        if (el) el.style.display = 'none';
+        document.getElementById('shipping-details').style.display = 'none';
+        document.getElementById('pickup-details').style.display = 'none';
+        var shippingLine = document.getElementById('shipping-line');
+        if (shippingLine) shippingLine.style.display = 'none';
+        selectedMethod = null;
+        validateBtn();
+        updateTotal();
+      }
+
+      // ── Recalcula el coste de envío según zona y total ───────────────────
+      function recalcShipping() {
+        if (!currentZone) return;
+        var zone = checkoutConfig.shippingZones[currentZone];
+        var cartTotal = window.MojoCart.total();
+        shippingCost = cartTotal >= zone.freeFromInCents ? 0 : zone.costInCents;
+
+        var costEl = document.getElementById('shipping-cost-display');
+        if (costEl) {
+          if (shippingCost === 0) {
+            costEl.textContent = 'Gratis';
+            costEl.classList.add('delivery-free');
+          } else {
+            costEl.textContent = fmtEur(shippingCost);
+            costEl.classList.remove('delivery-free');
+          }
+        }
+
+        if (selectedMethod === 'shipping') {
+          var lineEl = document.getElementById('shipping-line');
+          var lineCostEl = document.getElementById('shipping-line-cost');
+          if (lineEl) lineEl.style.display = 'flex';
+          if (lineCostEl) lineCostEl.textContent = shippingCost === 0 ? 'Gratis' : fmtEur(shippingCost);
+          updateIncentivo(cartTotal, currentZone);
+        }
+
+        updateTotal();
+      }
+
+      // ── Incentivo de envío gratis ────────────────────────────────────────
+      function updateIncentivo(cartTotal, zone) {
+        var incEl = document.getElementById('checkout-incentivo');
+        if (!incEl) return;
+
+        if (selectedMethod !== 'shipping') { incEl.style.display = 'none'; return; }
+
+        var zoneConfig = checkoutConfig.shippingZones[zone];
+        if (cartTotal < zoneConfig.freeFromInCents) {
+          var needed = zoneConfig.freeFromInCents - cartTotal;
+          var tarros = Math.ceil(needed / checkoutConfig.productPriceInCents);
+          incEl.textContent = '¡Oportunidad! Añade ' + tarros + ' tarro' + (tarros > 1 ? 's' : '') + ' más y el envío te sale gratis.';
+          incEl.style.display = 'block';
+        } else {
+          incEl.style.display = 'none';
+        }
+      }
+
+      // ── Total estimado ───────────────────────────────────────────────────
+      function updateTotal() {
+        var el = document.getElementById('order-total-val');
+        if (!el) return;
+        if (!currentZone || selectedMethod === null) { el.textContent = '—'; return; }
+        var shipping = selectedMethod === 'shipping' ? shippingCost : 0;
+        el.textContent = fmtEur(window.MojoCart.total() + shipping);
+      }
+
+      // ── Valida el botón de envío ─────────────────────────────────────────
+      function validateBtn() {
+        var btn = document.getElementById('submit-btn');
+        if (!btn) return;
+        var valid = false;
+        if (currentZone && selectedMethod === 'shipping') {
+          valid = true;
+        } else if (currentZone && selectedMethod === 'pickup') {
+          var point = document.getElementById('pickup-point').value;
+          var phone = document.getElementById('phone').value.trim();
+          valid = point !== '' && phone !== '';
+        }
+        btn.disabled = !valid;
+      }
+
+      // ── Inicialización ───────────────────────────────────────────────────
+      document.addEventListener('DOMContentLoaded', function() {
+        renderSummary();
+
+        // CP: validar al completar 5 dígitos
+        var cpInput = document.getElementById('postal-code');
+        if (cpInput) {
+          cpInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length === 5) validateCP(this.value);
+            if (this.value.length < 5) {
+              currentZone = null;
+              document.getElementById('zone-message').style.display = 'none';
+              hideDeliveryOptions();
+            }
+          });
+        }
+
+        // Método de entrega
+        document.querySelectorAll('input[name="delivery"]').forEach(function(radio) {
+          radio.addEventListener('change', function() {
+            selectedMethod = this.value;
+
+            if (selectedMethod === 'shipping') {
+              document.getElementById('shipping-details').style.display = 'block';
+              document.getElementById('pickup-details').style.display = 'none';
+              var lineEl = document.getElementById('shipping-line');
+              if (lineEl && currentZone) lineEl.style.display = 'flex';
+              updateIncentivo(window.MojoCart.total(), currentZone);
+            } else {
+              document.getElementById('shipping-details').style.display = 'none';
+              document.getElementById('pickup-details').style.display = 'block';
+              var shippingLineEl = document.getElementById('shipping-line');
+              if (shippingLineEl) shippingLineEl.style.display = 'none';
+              document.getElementById('checkout-incentivo').style.display = 'none';
+            }
+
+            updateTotal();
+            validateBtn();
+          });
+        });
+
+        // Recogida: validar al cambiar punto o teléfono
+        ['pickup-point', 'phone'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener('change', validateBtn);
+          if (el && id === 'phone') el.addEventListener('input', validateBtn);
+        });
+
+        // Botón de pago
+        var btn = document.getElementById('submit-btn');
+        if (btn) {
+          btn.addEventListener('click', async function() {
+            var errorEl = document.getElementById('submit-error');
+            var items = window.MojoCart.get().map(function(i) {
+              return { priceId: i.priceId, quantity: i.quantity };
+            });
+            if (!items.length) return;
+
+            // Analítica: begin_checkout / InitiateCheckout
+            var cartVal = window.MojoCart.total() / 100;
+            if (typeof window.gtag === 'function') {
+              gtag('event', 'begin_checkout', {
+                currency: 'EUR',
+                value: cartVal,
+                items: window.MojoCart.get().map(function(i) {
+                  return { item_id: i.priceId, item_name: i.name, price: i.priceInCents / 100, quantity: i.quantity };
+                }),
+              });
+            }
+            if (typeof window.fbq === 'function') {
+              fbq('track', 'InitiateCheckout', {
+                currency: 'EUR',
+                value: cartVal,
+                content_ids: items.map(function(i) { return i.priceId; }),
+                num_items: items.reduce(function(s, i) { return s + i.quantity; }, 0),
+              });
+            }
+
+            // Guarda el método de entrega para la página /gracias
+            sessionStorage.setItem('mojo-delivery-method', selectedMethod);
+            if (selectedMethod === 'pickup') {
+              sessionStorage.setItem('mojo-pickup-point',
+                document.getElementById('pickup-point').options[document.getElementById('pickup-point').selectedIndex].text
+              );
+            }
+
+            var payload = { items: items, deliveryMethod: selectedMethod };
+            if (selectedMethod === 'shipping') {
+              payload.postalCode = document.getElementById('postal-code').value;
+            } else {
+              payload.pickupPoint = document.getElementById('pickup-point').value;
+              payload.phone = document.getElementById('phone').value.trim();
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Redirigiendo a Stripe…';
+            if (errorEl) errorEl.style.display = 'none';
+
+            try {
+              var res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
+              var data = await res.json();
+              if (!res.ok || !data.url) throw new Error(data.error || 'Error al iniciar el pago');
+              window.location.href = data.url;
+            } catch (err) {
+              btn.disabled = false;
+              btn.textContent = 'Tramitar pedido →';
+              if (errorEl) {
+                errorEl.textContent = err.message || 'Error inesperado. Inténtalo de nuevo.';
+                errorEl.style.display = 'block';
+              }
+            }
+          });
+        }
+      });
+
+      // Si el carrito cambia (desde el drawer), re-renderizar
+      window.addEventListener('cart:update', function() {
+        renderSummary();
+        if (currentZone) recalcShipping();
+        updateTotal();
+        validateBtn();
+      });
+    </script>
+
+    <style>
+      .co-main {
+        padding-top: 80px;
+        min-height: 100vh;
+        background: var(--color-negro);
+      }
+
+      .co-container {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 3rem 2rem 5rem;
+      }
+
+      .co-page-title {
+        font-family: var(--font-serif);
+        font-size: clamp(30px, 4vw, 44px);
+        font-weight: 400;
+        font-style: italic;
+        color: var(--color-crema);
+        margin-bottom: 2.5rem;
+        line-height: 1.1;
+      }
+
+      .co-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2.5rem;
+        border-bottom: 0.5px solid #1e1e1e;
+      }
+
+      .co-section-title {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 1.25rem;
+      }
+
+      .co-loading {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        color: #555;
+      }
+
+      .co-empty {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        color: #666;
+      }
+
+      .co-link {
+        color: var(--color-rojo);
+        text-decoration: none;
+      }
+
+      /* Resumen del pedido */
+      .order-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin-bottom: 1rem;
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.6rem 0;
+        border-bottom: 0.5px solid #1e1e1e;
+      }
+
+      .order-item:last-child { border-bottom: none; }
+
+      .order-item-name {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--color-crema);
+      }
+
+      .order-item-price {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+      }
+
+      .order-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.5rem 0;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+        border-top: 0.5px solid #1e1e1e;
+      }
+
+      .order-subtotal {
+        font-weight: 400;
+        color: var(--color-crema);
+      }
+
+      /* Formulario */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 0.5rem;
+      }
+
+      .form-hint {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #555;
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background: #161616;
+        border: 0.5px solid #2a2a2a;
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 16px;
+        font-weight: 300;
+        outline: none;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+        border-radius: 0;
+      }
+
+      .form-input:focus {
+        border-color: var(--color-gris);
+      }
+
+      .form-input::placeholder { color: #3a3a3a; }
+
+      .form-select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background: #161616;
+        border: 0.5px solid #2a2a2a;
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        border-radius: 0;
+      }
+
+      .form-select option { background: #1a1a1a; }
+
+      /* Validación zona */
+      .zone-message {
+        margin-top: 0.75rem;
+        padding: 0.7rem 1rem;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        line-height: 1.6;
+      }
+
+      .zone-ok {
+        background: rgba(100, 180, 100, 0.08);
+        border: 0.5px solid rgba(100, 180, 100, 0.3);
+        color: #90c890;
+      }
+
+      .zone-error {
+        background: rgba(232, 0, 45, 0.07);
+        border: 0.5px solid rgba(232, 0, 45, 0.3);
+        color: #e0a0a0;
+      }
+
+      .zone-error a { color: var(--color-rojo); }
+
+      /* Opciones de entrega */
+      .delivery-option {
+        margin-bottom: 0.5rem;
+      }
+
+      .delivery-label {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border: 0.5px solid #2a2a2a;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        gap: 1rem;
+      }
+
+      .delivery-label:has(input:checked) {
+        border-color: var(--color-rojo);
+      }
+
+      .delivery-label input[type="radio"] {
+        accent-color: var(--color-rojo);
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+      }
+
+      .delivery-info {
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .delivery-name {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--color-crema);
+      }
+
+      .delivery-cost {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--color-crema);
+      }
+
+      .delivery-free { color: #90c890; }
+
+      /* Incentivo en checkout */
+      .checkout-incentivo {
+        margin-bottom: 1rem;
+        padding: 0.85rem 1rem;
+        background: rgba(232, 0, 45, 0.07);
+        border: 0.5px solid rgba(232, 0, 45, 0.25);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--color-crema);
+        line-height: 1.6;
+      }
+
+      .delivery-notice {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #666;
+        line-height: 1.6;
+        margin-top: 0.75rem;
+      }
+
+      /* Total + botón */
+      .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 1.25rem;
+        padding-top: 1rem;
+        border-top: 0.5px solid #2a2a2a;
+      }
+
+      .order-total-label {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+      }
+
+      .order-total-val {
+        font-family: var(--font-serif);
+        font-size: 26px;
+        font-weight: 400;
+        color: var(--color-crema);
+      }
+
+      .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 1.1rem 2rem;
+        background: var(--color-rojo);
+        border: none;
+        color: #fff;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        text-align: center;
+      }
+
+      .submit-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .submit-btn:not(:disabled):hover { opacity: 0.85; }
+
+      .submit-error {
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(232, 0, 45, 0.07);
+        border: 0.5px solid rgba(232, 0, 45, 0.3);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #e0a0a0;
+        line-height: 1.5;
+      }
+
+      .submit-note {
+        margin-top: 0.75rem;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        color: #444;
+        text-align: center;
+        letter-spacing: 0.3px;
+      }
+
+      @media (max-width: 767px) {
+        .co-container {
+          padding: 2rem 1.25rem 4rem;
+        }
+      }
+    </style>
+  </body>
+</html>
