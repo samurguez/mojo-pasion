@@ -2,6 +2,10 @@
 // Modifica este archivo para cambiar precios, zonas de envío y puntos de recogida.
 // No toques la lógica de las páginas.
 
+import type { ImageMetadata } from 'astro';
+import imgMojoSuave from '../assets/productos/mojo-suave.jpg';
+import imgMojoPicante from '../assets/productos/mojo-picante.jpg';
+
 export interface ProductConfig {
   id: string;
   priceId: string;
@@ -10,7 +14,7 @@ export interface ProductConfig {
   description: string;
   priceInCents: number;
   priceDisplay: string;
-  image: string;
+  image: ImageMetadata;
   imageAlt: string;
   badge: string | null;
 }
@@ -20,12 +24,12 @@ export const PRODUCTS: ProductConfig[] = [
     id: 'mojo-rojo-suave',
     priceId: import.meta.env.PRICE_ID_MOJO_SUAVE,
     name: 'Mojo rojo suave',
-    tagline: 'El sabor auténtico palmero, sin picante.',
+    tagline: '',
     description:
       'Pimienta de Puntagorda, sal marina de Fuencaliente, ajo del país, aceite de oliva y la receta de siempre. Hecho a mano en Canarias.',
     priceInCents: 1295,
     priceDisplay: '12,95 €',
-    image: '/images/hero.avif',
+    image: imgMojoSuave,
     imageAlt: 'Tarro de Mojo Pasión rojo suave artesano canario',
     badge: null,
   },
@@ -33,14 +37,14 @@ export const PRODUCTS: ProductConfig[] = [
     id: 'mojo-rojo-picante',
     priceId: import.meta.env.PRICE_ID_MOJO_PICANTE,
     name: 'Mojo rojo picante',
-    tagline: 'Para los que saben lo que quieren.',
+    tagline: '',
     description:
-      'La misma receta artesana, con el punto de picante que pide la pimienta palmera de verdad.',
+      'Pimienta de Puntagorda, sal marina de Fuencaliente, ajo del país, aceite de oliva y la receta de siempre, pero con ese toque de picante. Hecho a mano en Canarias.',
     priceInCents: 1295,
     priceDisplay: '12,95 €',
-    image: '/images/pimienta.avif',
+    image: imgMojoPicante,
     imageAlt: 'Tarro de Mojo Pasión rojo picante artesano canario',
-    badge: 'Picante',
+    badge: null,
   },
 ];
 
