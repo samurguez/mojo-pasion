@@ -66,8 +66,8 @@ export const SHIPPING_ZONES = {
 
 // Puntos de recogida — solo Tenerife en V1
 export const PICKUP_POINTS = [
-  { id: 'adeje', label: 'Adeje' },
-  { id: 'la-esperanza', label: 'La Esperanza' },
+  { id: 'zona-sur', label: 'Zona sur (Adeje)' },
+  { id: 'zona-norte', label: 'Zona norte (Santa Cruz/La Laguna)' },
 ];
 
 export type ShippingZoneKey = keyof typeof SHIPPING_ZONES;

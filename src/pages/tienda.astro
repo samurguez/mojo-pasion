@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import { Image } from 'astro:assets';
 import StoreHeader from '../components/StoreHeader.astro';
-import CartDrawer from '../components/CartDrawer.astro';
 import { PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
@@ -164,9 +163,6 @@ const productsForClient = PRODUCTS.map(p => ({
       }
     </script>
 
-    <CartDrawer />
-
-
     <!-- Add-to-cart logic + analytics -->
     <script define:vars={{ productsForClient }} is:inline>
       (function () {
@@ -183,30 +179,20 @@ const productsForClient = PRODUCTS.map(p => ({
 
             window.MojoCart.add(product, 1);
 
-            // Eventos de analítica
-            const value = product.priceInCents / 100;
+            // Analítica add_to_cart antes de redirigir
+            var value = product.priceInCents / 100;
             if (typeof window.gtag === 'function') {
               gtag('event', 'add_to_cart', {
                 currency: 'EUR',
                 value: value,
-                items: [{
-                  item_id: product.priceId,
-                  item_name: product.name,
-                  price: product.priceInCents / 100,
-                  quantity: 1,
-                }],
+                items: [{ item_id: product.priceId, item_name: product.name, price: value, quantity: 1 }],
               });
             }
             if (typeof window.fbq === 'function') {
-              fbq('track', 'AddToCart', {
-                content_ids: [product.priceId],
-                content_name: product.name,
-                currency: 'EUR',
-                value: value,
-              });
+              fbq('track', 'AddToCart', { content_ids: [product.priceId], content_name: product.name, currency: 'EUR', value: value });
             }
 
-            window.openCart?.();
+            window.location.href = '/checkout';
           });
         });
       })();

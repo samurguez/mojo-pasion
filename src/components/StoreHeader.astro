@@ -1,5 +1,4 @@
 ---
-// Cabecera para páginas de tienda — siempre visible (fixed)
 interface Props {
   showCart?: boolean;
 }
@@ -17,7 +16,7 @@ const { showCart = true } = Astro.props;
   </a>
 
   {showCart && (
-    <button id="cart-toggle" class="cart-toggle" aria-label="Ver carrito">
+    <a href="/checkout" id="cart-link" class="cart-toggle" aria-label="Ver carrito">
       <svg
         width="22"
         height="22"
@@ -32,9 +31,80 @@ const { showCart = true } = Astro.props;
         <path d="M16 10a4 4 0 01-8 0" />
       </svg>
       <span id="cart-count" class="cart-count" aria-label="artículos en el carrito">0</span>
-    </button>
+    </a>
   )}
 </header>
+
+<!-- window.MojoCart — módulo global disponible en todas las páginas de tienda -->
+<script is:inline>
+  window.MojoCart = (function () {
+    var KEY = 'mojo-cart-v1';
+
+    function read() {
+      try { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function write(items) {
+      localStorage.setItem(KEY, JSON.stringify(items));
+      window.dispatchEvent(new CustomEvent('cart:update', { detail: { items: items } }));
+    }
+
+    return {
+      get: read,
+
+      add: function (product, qty) {
+        if (!qty || qty < 1) qty = 1;
+        var items = read();
+        var idx = items.findIndex(function (i) { return i.priceId === product.priceId; });
+        if (idx >= 0) {
+          items[idx].quantity += qty;
+        } else {
+          items.push({
+            priceId: product.priceId,
+            name: product.name,
+            priceInCents: product.priceInCents,
+            priceDisplay: product.priceDisplay,
+            quantity: qty,
+          });
+        }
+        write(items);
+      },
+
+      setQty: function (priceId, qty) {
+        if (qty < 1) { this.remove(priceId); return; }
+        var items = read();
+        var idx = items.findIndex(function (i) { return i.priceId === priceId; });
+        if (idx >= 0) { items[idx].quantity = qty; write(items); }
+      },
+
+      remove: function (priceId) {
+        write(read().filter(function (i) { return i.priceId !== priceId; }));
+      },
+
+      clear: function () { write([]); },
+
+      total: function () {
+        return read().reduce(function (s, i) { return s + i.priceInCents * i.quantity; }, 0);
+      },
+
+      count: function () {
+        return read().reduce(function (s, i) { return s + i.quantity; }, 0);
+      },
+    };
+  })();
+
+  function _updateCartBadge() {
+    var badge = document.getElementById('cart-count');
+    if (!badge) return;
+    var count = window.MojoCart.count();
+    badge.textContent = String(count);
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', _updateCartBadge);
+  window.addEventListener('cart:update', _updateCartBadge);
+</script>
 
 <style>
   .store-header {
@@ -69,6 +139,7 @@ const { showCart = true } = Astro.props;
     align-items: center;
     justify-content: center;
     transition: color 0.2s;
+    text-decoration: none;
   }
 
   .cart-toggle:hover {

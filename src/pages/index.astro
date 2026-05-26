@@ -4,7 +4,6 @@ import '../styles/global.css';
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
-import CartDrawer from '../components/CartDrawer.astro';
 ---
 
 <html lang="es">
@@ -83,14 +82,14 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
   <header class="header" id="header">
       <img src="/images/logo-horizontal.png" alt="Mojo Pasión — logo mojo rojo palmero artesano canario" class="header-logo" width="200" height="50" />
       <div class="header-actions">
-        <button id="cart-toggle" class="header-cart-btn" aria-label="Ver carrito">
+        <a href="/checkout" id="cart-toggle" class="header-cart-btn" aria-label="Ver carrito">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
             <line x1="3" y1="6" x2="21" y2="6"/>
             <path d="M16 10a4 4 0 01-8 0"/>
           </svg>
           <span id="cart-count" class="header-cart-count">0</span>
-        </button>
+        </a>
         <a href="/tienda" class="header-cta">Comprar</a>
       </div>
     </header>
@@ -273,7 +272,22 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
         document.getElementById('cookies-banner').style.display = 'none';
       }
     </script>
-    <CartDrawer />
+    <script is:inline>
+      // Badge del carrito — lectura directa de localStorage (no necesita MojoCart completo)
+      (function () {
+        function updateBadge() {
+          var badge = document.getElementById('cart-count');
+          if (!badge) return;
+          try {
+            var items = JSON.parse(localStorage.getItem('mojo-cart-v1') || '[]');
+            var count = items.reduce(function (s, i) { return s + i.quantity; }, 0);
+            badge.textContent = String(count);
+            badge.style.display = count > 0 ? 'flex' : 'none';
+          } catch (e) {}
+        }
+        document.addEventListener('DOMContentLoaded', updateBadge);
+      })();
+    </script>
   </body>
 </html>
 <style>
