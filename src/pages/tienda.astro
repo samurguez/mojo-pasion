@@ -1,20 +1,13 @@
 ---
 import '../styles/global.css';
-import { Image } from 'astro:assets';
 import StoreHeader from '../components/StoreHeader.astro';
+import ProductCard from '../components/ProductCard.astro';
 import { PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
 
-// Solo los datos que necesita el cliente para el add-to-cart
-const productsForClient = PRODUCTS.map(p => ({
-  priceId: p.priceId,
-  name: p.name,
-  priceInCents: p.priceInCents,
-  priceDisplay: p.priceDisplay,
-}));
 ---
 
 <html lang="es">
@@ -84,34 +77,15 @@ const productsForClient = PRODUCTS.map(p => ({
       <!-- Grid de productos -->
       <div class="tienda-grid">
         {PRODUCTS.map((product) => (
-          <article class="product-card" data-price-id={product.priceId}>
-            <div class="product-img-wrap">
-              <Image
-                src={product.image}
-                alt={product.imageAlt}
-                class="product-img"
-                loading="eager"
-                widths={[400, 800, 1200]}
-                sizes="(max-width: 767px) 100vw, 50vw"
-              />
-            </div>
-
-            <div class="product-body">
-              <h2 class="product-name">{product.name}</h2>
-              <p class="product-desc">{product.description}</p>
-
-              <div class="product-bottom">
-                <button
-                  class="product-add-btn"
-                  data-price-id={product.priceId}
-                  type="button"
-                  aria-label={`Añadir ${product.name} al carrito, ${product.priceDisplay}`}
-                >
-                  Añadir · {product.priceDisplay}
-                </button>
-              </div>
-            </div>
-          </article>
+          <ProductCard
+            priceId={product.priceId}
+            name={product.name}
+            description={product.description}
+            priceDisplay={product.priceDisplay}
+            priceInCents={product.priceInCents}
+            image={product.image}
+            imageAlt={product.imageAlt}
+          />
         ))}
       </div>
     </main>
@@ -163,41 +137,6 @@ const productsForClient = PRODUCTS.map(p => ({
       }
     </script>
 
-    <!-- Add-to-cart logic + analytics -->
-    <script define:vars={{ productsForClient }} is:inline>
-      (function () {
-        // Índice de productos para lookup rápido
-        const productMap = {};
-        productsForClient.forEach(p => { productMap[p.priceId] = p; });
-
-        // Añadir al carrito
-        document.querySelectorAll('.product-add-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const priceId = btn.dataset.priceId;
-            const product = productMap[priceId];
-            if (!product) return;
-
-            window.MojoCart.add(product, 1);
-
-            // Analítica add_to_cart antes de redirigir
-            var value = product.priceInCents / 100;
-            if (typeof window.gtag === 'function') {
-              gtag('event', 'add_to_cart', {
-                currency: 'EUR',
-                value: value,
-                items: [{ item_id: product.priceId, item_name: product.name, price: value, quantity: 1 }],
-              });
-            }
-            if (typeof window.fbq === 'function') {
-              fbq('track', 'AddToCart', { content_ids: [product.priceId], content_name: product.name, currency: 'EUR', value: value });
-            }
-
-            window.location.href = '/checkout';
-          });
-        });
-      })();
-    </script>
-
     <style>
       .tienda-main {
         padding-top: 80px;
@@ -228,90 +167,6 @@ const productsForClient = PRODUCTS.map(p => ({
         max-width: 1160px;
         margin: 0 auto;
         padding: 0.75rem 1.25rem 4rem;
-      }
-
-      .product-card {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-        background: #1c1c1c;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 6px;
-        overflow: hidden;
-      }
-
-      .product-img-wrap {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        overflow: hidden;
-        background: #0d0d0d;
-      }
-
-      .product-img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        transition: transform 0.5s ease;
-      }
-
-      .product-card:hover .product-img {
-        transform: scale(1.03);
-      }
-
-      .product-body {
-        padding: 1.1rem 2rem 2rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        gap: 0;
-      }
-
-      .product-name {
-        font-family: var(--font-serif);
-        font-size: clamp(34px, 4vw, 52px);
-        font-weight: 400;
-        font-style: italic;
-        color: var(--color-crema);
-        line-height: 1.1;
-        margin-bottom: 0.5rem;
-      }
-
-      .product-desc {
-        font-family: var(--font-sans);
-        font-size: 13px;
-        font-weight: 300;
-        color: #666;
-        line-height: 1.7;
-        margin-bottom: 2rem;
-      }
-
-      .product-bottom {
-        margin-top: auto;
-      }
-
-      .product-add-btn {
-        display: block;
-        width: 100%;
-        padding: 1rem 2rem;
-        background: #E8002D;
-        border: none;
-        color: #fff;
-        font-family: var(--font-sans);
-        font-size: 14px;
-        font-weight: 400;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: background 0.2s;
-        text-align: center;
-      }
-
-      .product-add-btn:hover {
-        background: #c40026;
       }
 
       /* Footer */
@@ -422,20 +277,12 @@ const productsForClient = PRODUCTS.map(p => ({
           gap: 1.75rem;
           padding: 0.75rem 2.5rem 5rem;
         }
-
-        .product-body {
-          padding: 2rem 2.25rem 2.25rem;
-        }
       }
 
       /* ── Móvil ── */
       @media (max-width: 767px) {
         .tienda-intro {
           padding: 1.5rem 1.5rem 0.5rem;
-        }
-
-        .product-body {
-          padding: 1.25rem 1.25rem 1.75rem;
         }
 
         .footer {

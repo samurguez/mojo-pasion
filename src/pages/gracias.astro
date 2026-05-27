@@ -70,48 +70,50 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
         <p class="gracias-label">Pedido recibido</p>
         <h1 class="gracias-title">¡Gracias por<br />tu confianza!</h1>
 
-        <p class="gracias-body">
-          Recibirás la confirmación por email en breve.<br />
-          En los próximos días nos pondremos en contacto contigo para coordinar la entrega.
-        </p>
-
-        <p id="gracias-delivery-msg" class="gracias-delivery" style="display:none"></p>
+        <ul class="gracias-steps">
+          <li class="gracias-step">
+            <span class="gracias-step-body">Recibirás la confirmación por email en breve.</span>
+            <span class="gracias-step-note">Si no lo ves, revisa spam o promociones.</span>
+          </li>
+          <li class="gracias-step">
+            <span class="gracias-step-body" id="gracias-delivery-msg"></span>
+          </li>
+        </ul>
 
         <a href="/" class="gracias-btn">Volver al inicio</a>
+        <p class="gracias-contact">¿Alguna duda? Escríbenos a <a href="mailto:hola@mojopasion.com" class="gracias-email">hola@mojopasion.com</a></p>
 
       </div>
     </main>
 
     <script is:inline>
-      (function() {
+      document.addEventListener('DOMContentLoaded', function() {
         // Lee el carrito ANTES de vaciarlo — lo necesitamos para los eventos
-        var cartKey = 'mojo-cart-v1';
-        var items = [];
-        try { items = JSON.parse(localStorage.getItem(cartKey) || '[]'); } catch(e) {}
-
+        var items = window.Cart.get();
         var cartTotal = items.reduce(function(s, i) { return s + i.priceInCents * i.quantity; }, 0);
 
         // session_id de Stripe en la URL
         var urlParams = new URLSearchParams(window.location.search);
         var sessionId = urlParams.get('session_id') || 'unknown';
 
-        // Mensaje de entrega personalizado
+        // Mensaje de entrega — segundo punto de la lista
         var method = sessionStorage.getItem('mojo-delivery-method');
         var msgEl = document.getElementById('gracias-delivery-msg');
-        if (msgEl && method) {
-          msgEl.style.display = 'block';
+        if (msgEl) {
           if (method === 'shipping') {
             msgEl.textContent = 'Tu mojo saldrá en breve. El envío puede tardar entre 3 y 7 días.';
           } else if (method === 'pickup') {
             var point = sessionStorage.getItem('mojo-pickup-point') || '';
             msgEl.textContent = 'Te contactaremos para concertar la recogida' + (point ? ' en ' + point : '') + '.';
+          } else {
+            msgEl.textContent = 'Nos pondremos en contacto contigo en los próximos días.';
           }
-          sessionStorage.removeItem('mojo-delivery-method');
-          sessionStorage.removeItem('mojo-pickup-point');
         }
+        sessionStorage.removeItem('mojo-delivery-method');
+        sessionStorage.removeItem('mojo-pickup-point');
 
         // Vaciar el carrito
-        localStorage.removeItem(cartKey);
+        window.Cart.clear();
 
         // Eventos de analítica: purchase
         if (items.length > 0) {
@@ -138,7 +140,7 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
             });
           }
         }
-      })();
+      });
     </script>
 
     <style>
@@ -190,24 +192,31 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
         margin-bottom: 2rem;
       }
 
-      .gracias-body {
+      .gracias-steps {
+        list-style: none;
+        text-align: center;
+        margin: 0 auto 2.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .gracias-step-body {
         font-family: var(--font-sans);
         font-size: 14px;
         font-weight: 300;
         color: var(--color-gris);
-        line-height: 1.7;
-        margin-bottom: 1rem;
+        line-height: 1.6;
       }
 
-      .gracias-delivery {
+.gracias-step-note {
+        display: block;
         font-family: var(--font-sans);
         font-size: 13px;
         font-weight: 300;
-        color: #888;
-        line-height: 1.7;
-        margin-bottom: 2.5rem;
-        padding: 0.85rem 1.25rem;
-        border: 0.5px solid #222;
+        color: #999;
+        letter-spacing: 0.3px;
+        margin-top: 0.25rem;
       }
 
       .gracias-btn {
@@ -228,6 +237,25 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
       .gracias-btn:hover {
         border-color: var(--color-rojo);
         color: var(--color-rojo);
+      }
+
+      .gracias-contact {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #999;
+        letter-spacing: 0.3px;
+        margin-top: 1.5rem;
+      }
+
+      .gracias-email {
+        color: var(--color-rojo);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      .gracias-email:hover {
+        color: var(--color-crema);
       }
 
       @media (max-width: 767px) {

@@ -242,7 +242,7 @@ const checkoutConfig = {
 
       // ── Inicializa cantidades desde el carrito ───────────────────────────────
       function initQtys() {
-        var cart = window.MojoCart.get();
+        var cart = window.Cart.get();
         products.forEach(function (p) {
           var item = cart.find(function (i) { return i.priceId === p.priceId; });
           qtys[p.priceId] = item ? item.quantity : 0;
@@ -263,8 +263,7 @@ const checkoutConfig = {
             });
           }
         });
-        localStorage.setItem('mojo-cart-v1', JSON.stringify(items));
-        window.dispatchEvent(new CustomEvent('cart:update', { detail: { items: items } }));
+        window.Cart.setAll(items);
       }
 
       // ── Subtotal de la selección actual ─────────────────────────────────────
