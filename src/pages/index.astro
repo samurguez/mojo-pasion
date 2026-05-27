@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import ProductCard from '../components/ProductCard.astro';
+import { PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
@@ -188,18 +190,20 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
         </div>
       </section>
 
-      <!-- CTA -->
-      <section class="cta fade-in" id="cta">
-        <div class="cta-content">
-          <p class="cta-label">Mojo rojo palmero artesano</p>
-          <h2 class="cta-title">La receta ya está.</h2>
-          <p class="cta-subtitle">El mojo a la venta, casi.</p>
-          <form class="cta-form" id="waitlist-form">
-  <input type="email" placeholder="Tu email" class="cta-input" id="waitlist-email" required />
-  <button type="submit" class="cta-btn">Avísame</button>
-</form>
-<p class="cta-success" id="cta-success" style="display:none;"><span style="color: var(--color-rojo);">¡Hecho!</span> Te avisamos en cuanto el mojo esté a la venta.</p>
-          <p class="cta-note">Sin spam. Solo mojo.</p>
+      <!-- PRODUCTOS -->
+      <section class="productos fade-in" id="productos">
+        <div class="productos-grid">
+          {PRODUCTS.map((product) => (
+            <ProductCard
+              priceId={product.priceId}
+              name={product.name}
+              description={product.description}
+              priceDisplay={product.priceDisplay}
+              priceInCents={product.priceInCents}
+              image={product.image}
+              imageAlt={product.imageAlt}
+            />
+          ))}
         </div>
       </section>
 
@@ -207,8 +211,8 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
       <section class="cta-papa fade-in">
         <img src="/images/papa.avif" alt="Papa arrugada canaria con mojo rojo palmero artesano — Mojo Pasión" class="cta-papa-img" />
         <div class="cta-papa-content">
-          <p class="hero-title">¿Quieres una muestra?</p>
-          <p class="papa-subtitle">El mojo que <span style="color: var(--color-rojo);">no se vende</span> quiere decir muchas cosas. Si lo entiendes, <span style="color: var(--color-rojo);">eres de los nuestros.</span></p>
+          <p class="hero-title">¿Tienes un <span style="color: var(--color-rojo);">negocio?</span></p>
+          <p class="papa-subtitle">Formatos HORECA para llevar el mojo palmero artesano a tu carta.</p>
           <a href="mailto:hola@mojopasion.com" class="hero-cta">Escríbenos</a>
         </div>
       </section>
@@ -272,20 +276,21 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
         document.getElementById('cookies-banner').style.display = 'none';
       }
     </script>
+    <script>
+      import '../lib/cart.ts';
+    </script>
     <script is:inline>
-      // Badge del carrito — lectura directa de localStorage (no necesita MojoCart completo)
+      // Badge del carrito
       (function () {
         function updateBadge() {
           var badge = document.getElementById('cart-count');
           if (!badge) return;
-          try {
-            var items = JSON.parse(localStorage.getItem('mojo-cart-v1') || '[]');
-            var count = items.reduce(function (s, i) { return s + i.quantity; }, 0);
-            badge.textContent = String(count);
-            badge.style.display = count > 0 ? 'flex' : 'none';
-          } catch (e) {}
+          var n = window.Cart.count();
+          badge.textContent = String(n);
+          badge.style.display = n > 0 ? 'flex' : 'none';
         }
         document.addEventListener('DOMContentLoaded', updateBadge);
+        window.addEventListener('cart:update', updateBadge);
       })();
     </script>
   </body>
@@ -438,120 +443,17 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     letter-spacing: 1.2px;
   }
 
-  .cta {
+  .productos {
     background: #111111;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0;
-  }
-
-  .cta-content {
-    text-align: center;
-    max-width: 700px;
     padding: 6rem 2rem;
+  }
+
+  .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    max-width: 1160px;
     margin: 0 auto;
-  }
-
-  .cta-label {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--color-gris);
-    margin-bottom: 1.5rem;
-  }
-
-  .cta-title {
-    font-family: var(--font-serif);
-    font-size: clamp(42px, 5vw, 72px);
-    font-weight: 400;
-    color: var(--color-crema);
-    line-height: 1.05;
-    margin-bottom: 0.25rem;
-  }
-
-  .cta-subtitle {
-    font-family: var(--font-serif);
-    font-size: clamp(20px, 2.5vw, 32px);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--color-gris);
-    line-height: 1.2;
-    margin-bottom: 2.5rem;
-  }
-
-  .cta-form {
-    display: flex;
-    gap: 0;
-    max-width: 420px;
-    margin: 0 auto 1rem;
-  }
-
-  .cta-input {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    background: #2a2a2a;
-    border: 0.5px solid #555555;
-    border-right: none;
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 300;
-    outline: none;
-  }
-
-  .cta-input::placeholder {
-    color: #555555;
-  }
-
-  .cta-btn {
-    padding: 1rem 2rem;
-    background: var(--color-rojo);
-    border: none;
-    color: #ffffff;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .cta-btn-b {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: transparent;
-    border: 0.5px solid #444444;
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .cta-note {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 300;
-    color: #777777;
-    letter-spacing: 1px;
-    margin-top: 1rem;
-  }
-
- .cta-success {
-    font-family: var(--font-serif);
-    font-size: clamp(20px, 2.5vw, 32px);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--color-gris);
-    line-height: 1.2;
-    margin-top: 1rem;
   }
 
   .cta-papa {
@@ -584,12 +486,6 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     color: var(--color-gris);
     line-height: 1.15;
     margin-bottom: 2rem;
-  }
-
-  .cta-divider {
-    width: 1px;
-    height: 60px;
-    background: #333333;
   }
 
   .header {
@@ -829,31 +725,13 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
       font-size: 12px;
     }
 
-    .cta {
-      padding: 4rem 1.5rem;
+    .productos {
+      padding: 4rem 1.25rem;
     }
 
-    .cta-title {
-      font-size: clamp(32px, 8vw, 52px);
-    }
-
-    .cta-subtitle {
-      font-size: clamp(16px, 4vw, 24px);
-    }
-
-    .cta-form {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .cta-input {
-      border-right: 0.5px solid #555555;
-      border-bottom: none;
-    }
-
-    .cta-btn {
-      width: 100%;
-      text-align: center;
+    .productos-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
     }
 
     .cta-papa-content {
@@ -931,40 +809,6 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
   }
 
 </style>
-
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('waitlist-form');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('waitlist-email').value;
-
-      const res = await fetch('https://ytxidsruoelvzqcdzkqi.supabase.co/rest/v1/lista_espera', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'sb_publishable_1UBrEVd9-NJ1tEB62CX_TQ_0sI_5vpU',
-          'Authorization': 'Bearer sb_publishable_1UBrEVd9-NJ1tEB62CX_TQ_0sI_5vpU',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ email })
-      });
-
-      if (res.ok) {
-        form.style.display = 'none';
-        document.getElementById('cta-success').style.display = 'block';
-      } else if (res.status === 409) {
-        form.style.display = 'none';
-        document.getElementById('cta-success').innerHTML = 'Ya estás en la lista. Te avisamos cuando esté disponible.';
-        document.getElementById('cta-success').style.display = 'block';
-      } else {
-        alert('Algo salió mal. Inténtalo de nuevo.');
-      }
-    });
-  });
-</script>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
