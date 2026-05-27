@@ -2,10 +2,56 @@
 import '../styles/global.css';
 import ProductCard from '../components/ProductCard.astro';
 import { PRODUCTS } from '../lib/tienda-config';
+import { getImage } from 'astro:assets';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const BASE = 'https://www.mojopasion.com';
+
+const productImages = await Promise.all(
+  PRODUCTS.map(p => getImage({ src: p.image, width: 800 }))
+);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Mojo Pasión',
+      url: BASE,
+      logo: `${BASE}/images/logo-horizontal.png`,
+      email: 'hola@mojopasion.com',
+      sameAs: [
+        'https://www.instagram.com/mojo_pasion',
+        'https://www.tiktok.com/@mojopasion',
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      name: 'Productos Mojo Pasión',
+      itemListElement: PRODUCTS.map((product, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: product.name,
+          description: product.description,
+          image: `${BASE}${productImages[i].src}`,
+          brand: { '@type': 'Brand', name: 'Mojo Pasión' },
+          offers: {
+            '@type': 'Offer',
+            price: (product.priceInCents / 100).toFixed(2),
+            priceCurrency: 'EUR',
+            availability: 'https://schema.org/InStock',
+            url: `${BASE}/tienda`,
+          },
+        },
+      })),
+    },
+  ],
+};
 ---
 
 <html lang="es">
@@ -34,6 +80,9 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
 <meta name="twitter:title" content="Mojo Pasión — No es para todos. Es para ti." />
 <meta name="twitter:description" content="Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias." />
 <meta name="twitter:image" content="https://www.mojopasion.com/images/hero.jpg" />
+    <!-- JSON-LD -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+
 	<!-- Meta Pixel Code -->
 <script is:inline>
 !function(f,b,e,v,n,t,s)
