@@ -69,6 +69,11 @@ const checkoutConfig = {
   </head>
 
   <body>
+    <!-- Fondo fijo — position:fixed es la técnica robusta en iOS (background-attachment:fixed no funciona en Safari móvil) -->
+    <div class="co-bg" aria-hidden="true">
+      <div class="co-bg-overlay"></div>
+    </div>
+
     <StoreHeader />
 
     <main class="co-main">
@@ -341,10 +346,9 @@ const checkoutConfig = {
           var needed = zone.freeFromInCents - sub;
           var tarros = Math.ceil(needed / products[0].priceInCents);
           var plural = tarros > 1 ? 's' : '';
-          var btnPrice = fmtEur(tarros * products[0].priceInCents);
           incEl.innerHTML =
             '<span class="co-incentivo-text">Añade ' + tarros + ' tarro' + plural + ' más y el envío te sale <span class="co-incentivo-green">gratis</span>.</span>' +
-            '<button type="button" class="co-incentivo-btn" id="incentivo-add-btn">Añadir ' + tarros + '&nbsp;·&nbsp;+' + btnPrice + '</button>';
+            '<button type="button" class="co-incentivo-btn" id="incentivo-add-btn">Añade ' + tarros + ' más</button>';
           incEl.style.display = 'flex';
 
           var addBtn = document.getElementById('incentivo-add-btn');
@@ -570,10 +574,26 @@ const checkoutConfig = {
     </script>
 
     <style>
+      /* ── Fondo fijo ─────────────────────────────────────────────────────────── */
+      .co-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: url('/checkout-bg.avif') center / cover no-repeat;
+      }
+
+      .co-bg-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.30); /* ← ajustar opacidad aquí */
+      }
+
+      /* ── Layout ─────────────────────────────────────────────────────────────── */
       .co-main {
+        position: relative;
+        z-index: 1;
         padding-top: 80px;
         min-height: 100vh;
-        background: var(--color-negro);
       }
 
       .co-container {
@@ -831,14 +851,7 @@ const checkoutConfig = {
       .form-input:focus { border-color: var(--color-gris); }
       .form-input::placeholder { color: #3a3a3a; }
 
-      .form-optional {
-        font-size: 10px;
-        font-weight: 300;
-        letter-spacing: 0.5px;
-        text-transform: none;
-        color: #777;
-        margin-left: 0.4em;
-      }
+
 
 
 

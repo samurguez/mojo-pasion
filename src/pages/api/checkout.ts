@@ -4,7 +4,7 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
-import { PRODUCTS, SHIPPING_ZONES } from '../../lib/tienda-config';
+import { PRODUCTS, SHIPPING_ZONES, PICKUP_POINTS } from '../../lib/tienda-config';
 
 interface CartItem {
   priceId: string;
@@ -16,7 +16,6 @@ interface CheckoutBody {
   deliveryMethod: 'shipping' | 'pickup';
   postalCode?: string;
   pickupPoint?: string;
-  phone?: string;
 }
 
 // Tipo local para los line items: precio ya creado en Stripe | precio ad-hoc (envío)
@@ -63,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Payload inválido' }, 400);
   }
 
-  const { items, deliveryMethod, postalCode, pickupPoint, phone } = body;
+  const { items, deliveryMethod, postalCode, pickupPoint } = body;
 
   if (!Array.isArray(items) || items.length === 0) return json({ error: 'Carrito vacío' }, 400);
 
@@ -85,7 +84,6 @@ export const POST: APIRoute = async ({ request }) => {
     shippingCost = cost;
   } else if (deliveryMethod === 'pickup') {
     if (!pickupPoint) return json({ error: 'Punto de recogida requerido' }, 400);
-    if (!phone?.trim()) return json({ error: 'Teléfono requerido para recogida' }, 400);
   } else {
     return json({ error: 'Método de entrega inválido' }, 400);
   }
@@ -122,14 +120,15 @@ export const POST: APIRoute = async ({ request }) => {
     metadata: {
       delivery_method: deliveryMethod,
       ...(deliveryMethod === 'shipping' && postalCode ? { postal_code: postalCode } : {}),
-      ...(deliveryMethod === 'pickup' && pickupPoint ? { pickup_point: pickupPoint } : {}),
-      ...(phone ? { phone } : {}),
+      ...(deliveryMethod === 'pickup' && pickupPoint ? {
+        pickup_point: PICKUP_POINTS.find(p => p.id === pickupPoint)?.label ?? pickupPoint,
+      } : {}),
     },
-    // Stripe recoge la dirección completa para envíos a domicilio
+    // Stripe recoge dirección completa solo para envío a domicilio
     // Nota: Hosted Checkout no permite pre-rellenar el CP automáticamente
+    phone_number_collection: { enabled: true },
     ...(deliveryMethod === 'shipping' ? {
       shipping_address_collection: { allowed_countries: ['ES' as const] },
-      phone_number_collection: { enabled: true },
     } : {}),
   };
 
