@@ -1,9 +1,58 @@
 ---
 import '../styles/global.css';
+import ProductCard from '../components/ProductCard.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+import { PRODUCTS } from '../lib/tienda-config';
+import { getImage } from 'astro:assets';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const BASE = 'https://www.mojopasion.com';
+
+const productImages = await Promise.all(
+  PRODUCTS.map(p => getImage({ src: p.image, width: 800 }))
+);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Mojo Pasión',
+      url: BASE,
+      logo: `${BASE}/images/logo-horizontal.png`,
+      email: 'hola@mojopasion.com',
+      sameAs: [
+        'https://www.instagram.com/mojo_pasion',
+        'https://www.tiktok.com/@mojopasion',
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      name: 'Productos Mojo Pasión',
+      itemListElement: PRODUCTS.map((product, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Product',
+          name: product.name,
+          description: product.description,
+          image: `${BASE}${productImages[i].src}`,
+          brand: { '@type': 'Brand', name: 'Mojo Pasión' },
+          offers: {
+            '@type': 'Offer',
+            price: (product.priceInCents / 100).toFixed(2),
+            priceCurrency: 'EUR',
+            availability: 'https://schema.org/InStock',
+            url: `${BASE}/tienda`,
+          },
+        },
+      })),
+    },
+  ],
+};
 ---
 
 <html lang="es">
@@ -32,39 +81,9 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
 <meta name="twitter:title" content="Mojo Pasión — No es para todos. Es para ti." />
 <meta name="twitter:description" content="Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias." />
 <meta name="twitter:image" content="https://www.mojopasion.com/images/hero.jpg" />
-	<!-- Meta Pixel Code -->
-<script is:inline>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '982174691398586');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
-	<script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      window.mojoCookiesAccepted = false;
+    <!-- JSON-LD -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
-      function loadGA() {
-        if (window.mojoCookiesAccepted) return;
-        window.mojoCookiesAccepted = true;
-        var s = document.createElement('script');
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
-        s.async = true;
-        document.head.appendChild(s);
-        gtag('config', 'G-4K3BK6E95M');
-      }
-    </script>
   </head>
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
@@ -81,7 +100,17 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
   <body>
   <header class="header" id="header">
       <img src="/images/logo-horizontal.png" alt="Mojo Pasión — logo mojo rojo palmero artesano canario" class="header-logo" width="200" height="50" />
-      <a href="#cta" class="header-cta">Comprar</a>
+      <div class="header-actions">
+        <a href="/checkout" id="cart-toggle" class="header-cart-btn" aria-label="Ver carrito">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          <span id="cart-count" class="header-cart-count">0</span>
+        </a>
+        <a href="/tienda" class="header-cta">Comprar</a>
+      </div>
     </header>
     <!-- HERO -->
       <section class="hero">
@@ -90,7 +119,7 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
           <h1 class="hero-small">Mojo rojo palmero artesano</h1>
           <p class="hero-title">No es para todos</p>
           <p class="hero-subtitle">Es para ti.</p>
-<a href="#cta" class="hero-cta">Comprar</a>
+<a href="/tienda" class="hero-cta">Comprar</a>
         </div>
       </section>
 
@@ -178,18 +207,20 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
         </div>
       </section>
 
-      <!-- CTA -->
-      <section class="cta fade-in" id="cta">
-        <div class="cta-content">
-          <p class="cta-label">Mojo rojo palmero artesano</p>
-          <h2 class="cta-title">La receta ya está.</h2>
-          <p class="cta-subtitle">El mojo a la venta, casi.</p>
-          <form class="cta-form" id="waitlist-form">
-  <input type="email" placeholder="Tu email" class="cta-input" id="waitlist-email" required />
-  <button type="submit" class="cta-btn">Avísame</button>
-</form>
-<p class="cta-success" id="cta-success" style="display:none;"><span style="color: var(--color-rojo);">¡Hecho!</span> Te avisamos en cuanto el mojo esté a la venta.</p>
-          <p class="cta-note">Sin spam. Solo mojo.</p>
+      <!-- PRODUCTOS -->
+      <section class="productos fade-in" id="productos">
+        <div class="productos-grid">
+          {PRODUCTS.map((product) => (
+            <ProductCard
+              priceId={product.priceId}
+              name={product.name}
+              description={product.description}
+              priceDisplay={product.priceDisplay}
+              priceInCents={product.priceInCents}
+              image={product.image}
+              imageAlt={product.imageAlt}
+            />
+          ))}
         </div>
       </section>
 
@@ -197,8 +228,8 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
       <section class="cta-papa fade-in">
         <img src="/images/papa.avif" alt="Papa arrugada canaria con mojo rojo palmero artesano — Mojo Pasión" class="cta-papa-img" />
         <div class="cta-papa-content">
-          <p class="hero-title">¿Quieres una muestra?</p>
-          <p class="papa-subtitle">El mojo que <span style="color: var(--color-rojo);">no se vende</span> quiere decir muchas cosas. Si lo entiendes, <span style="color: var(--color-rojo);">eres de los nuestros.</span></p>
+          <p class="hero-title">¿Tienes un <span style="color: var(--color-rojo);">negocio?</span></p>
+          <p class="papa-subtitle">Formatos HORECA para llevar el mojo palmero artesano a tu carta.</p>
           <a href="mailto:hola@mojopasion.com" class="hero-cta">Escríbenos</a>
         </div>
       </section>
@@ -232,35 +263,26 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
             <a href="https://tiktok.com/@mojopasion" target="_blank" class="footer-social-link">TikTok</a>
           </div>
           <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
-          <p class="footer-seo">Mojo Pasión — Mojo rojo palmero artesano elaborado en Canarias con pimienta palmera, sal marina de la isla y respetando la receta familiar.</p>
         </div>
+        <p class="footer-seo">Mojo Pasión — Mojo rojo palmero artesano elaborado en Canarias con pimienta palmera, sal marina de la isla y respetando la receta familiar.</p>
       </footer>
-<div class="cookies-banner" id="cookies-banner">
-      <p class="cookies-text">Solo usamos cookies de análisis para mejorar nuestro servicio. Sin publicidad, sin terceros, sin trampa. </p>
-      <div class="cookies-btns">
-        <button class="cookies-accept" onclick="acceptCookies()">Aceptar</button>
-        <button class="cookies-reject" onclick="rejectCookies()">Rechazar</button>
-      </div>
-    </div>
-
+    <script>
+      import '../lib/cart.ts';
+    </script>
+    <CookieConsent />
     <script is:inline>
-      function acceptCookies() {
-        localStorage.setItem('mojo-cookies', 'accepted');
-        document.getElementById('cookies-banner').style.display = 'none';
-        loadGA();
-      }
-
-      function rejectCookies() {
-        localStorage.setItem('mojo-cookies', 'rejected');
-        document.getElementById('cookies-banner').style.display = 'none';
-      }
-
-      if (localStorage.getItem('mojo-cookies') === 'accepted') {
-        loadGA();
-        document.getElementById('cookies-banner').style.display = 'none';
-      } else if (localStorage.getItem('mojo-cookies') === 'rejected') {
-        document.getElementById('cookies-banner').style.display = 'none';
-      }
+      // Badge del carrito
+      (function () {
+        function updateBadge() {
+          var badge = document.getElementById('cart-count');
+          if (!badge) return;
+          var n = window.Cart.count();
+          badge.textContent = String(n);
+          badge.style.display = n > 0 ? 'flex' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', updateBadge);
+        window.addEventListener('cart:update', updateBadge);
+      })();
     </script>
   </body>
 </html>
@@ -412,120 +434,17 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     letter-spacing: 1.2px;
   }
 
-  .cta {
+  .productos {
     background: #111111;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: center;
-    gap: 0;
-  }
-
-  .cta-content {
-    text-align: center;
-    max-width: 700px;
     padding: 6rem 2rem;
+  }
+
+  .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    max-width: 1160px;
     margin: 0 auto;
-  }
-
-  .cta-label {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--color-gris);
-    margin-bottom: 1.5rem;
-  }
-
-  .cta-title {
-    font-family: var(--font-serif);
-    font-size: clamp(42px, 5vw, 72px);
-    font-weight: 400;
-    color: var(--color-crema);
-    line-height: 1.05;
-    margin-bottom: 0.25rem;
-  }
-
-  .cta-subtitle {
-    font-family: var(--font-serif);
-    font-size: clamp(20px, 2.5vw, 32px);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--color-gris);
-    line-height: 1.2;
-    margin-bottom: 2.5rem;
-  }
-
-  .cta-form {
-    display: flex;
-    gap: 0;
-    max-width: 420px;
-    margin: 0 auto 1rem;
-  }
-
-  .cta-input {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    background: #2a2a2a;
-    border: 0.5px solid #555555;
-    border-right: none;
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 300;
-    outline: none;
-  }
-
-  .cta-input::placeholder {
-    color: #555555;
-  }
-
-  .cta-btn {
-    padding: 1rem 2rem;
-    background: var(--color-rojo);
-    border: none;
-    color: #ffffff;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .cta-btn-b {
-    display: inline-block;
-    padding: 1rem 2.5rem;
-    background: transparent;
-    border: 0.5px solid #444444;
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-    font-size: 12px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .cta-note {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 300;
-    color: #777777;
-    letter-spacing: 1px;
-    margin-top: 1rem;
-  }
-
- .cta-success {
-    font-family: var(--font-serif);
-    font-size: clamp(20px, 2.5vw, 32px);
-    font-weight: 300;
-    font-style: italic;
-    color: var(--color-gris);
-    line-height: 1.2;
-    margin-top: 1rem;
   }
 
   .cta-papa {
@@ -558,12 +477,6 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     color: var(--color-gris);
     line-height: 1.15;
     margin-bottom: 2rem;
-  }
-
-  .cta-divider {
-    width: 1px;
-    height: 60px;
-    background: #333333;
   }
 
   .header {
@@ -620,6 +533,8 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem 2rem;
     width: 100%;
   }
 
@@ -678,63 +593,8 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
     color: #333333;
     letter-spacing: 0.5px;
     text-align: center;
-    margin-top: 0.5rem;
-  }
-
-  .cookies-banner {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a1a1a;
-    border: 0.5px solid #333333;
-    padding: 1.25rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    z-index: 200;
-    max-width: 760px;
-    width: 95%;
-  }
-
-  .cookies-text {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 300;
-    color: #BBBBBB;
-    margin: 0;
-  }
-
-  .cookies-btns {
-    display: flex;
-    gap: 0.75rem;
-    flex-shrink: 0;
-  }
-
-  .cookies-accept {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    background: var(--color-rojo);
-    color: #ffffff;
-    border: none;
-    padding: 0.6rem 1.25rem;
-    cursor: pointer;
-  }
-
-  .cookies-reject {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    background: transparent;
-    color: #666666;
-    border: 0.5px solid #444444;
-    padding: 0.6rem 1.25rem;
-    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
   }
 
   .fade-in {
@@ -749,23 +609,6 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
   }
 
   @media (max-width: 768px) {
-
-    .cookies-banner {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-    }
-
-    .cookies-btns {
-      width: 100%;
-    }
-
-    .cookies-accept,
-    .cookies-reject {
-      flex: 1;
-      text-align: center;
-    }
 
     .hero-content {
       left: 5%;
@@ -803,31 +646,13 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
       font-size: 12px;
     }
 
-    .cta {
-      padding: 4rem 1.5rem;
+    .productos {
+      padding: 4rem 1.25rem;
     }
 
-    .cta-title {
-      font-size: clamp(32px, 8vw, 52px);
-    }
-
-    .cta-subtitle {
-      font-size: clamp(16px, 4vw, 24px);
-    }
-
-    .cta-form {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .cta-input {
-      border-right: 0.5px solid #555555;
-      border-bottom: none;
-    }
-
-    .cta-btn {
-      width: 100%;
-      text-align: center;
+    .productos-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
     }
 
     .cta-papa-content {
@@ -861,41 +686,50 @@ src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1"
 
   }
 
+  /* Carrito en el header de la landing */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .header-cart-btn {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-crema);
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .header-cart-btn:hover {
+    color: var(--color-rojo);
+  }
+
+  .header-cart-count {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background: var(--color-rojo);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+  }
+
 </style>
-
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('waitlist-form');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('waitlist-email').value;
-
-      const res = await fetch('https://ytxidsruoelvzqcdzkqi.supabase.co/rest/v1/lista_espera', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'sb_publishable_1UBrEVd9-NJ1tEB62CX_TQ_0sI_5vpU',
-          'Authorization': 'Bearer sb_publishable_1UBrEVd9-NJ1tEB62CX_TQ_0sI_5vpU',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({ email })
-      });
-
-      if (res.ok) {
-        form.style.display = 'none';
-        document.getElementById('cta-success').style.display = 'block';
-      } else if (res.status === 409) {
-        form.style.display = 'none';
-        document.getElementById('cta-success').innerHTML = 'Ya estás en la lista. Te avisamos cuando esté disponible.';
-        document.getElementById('cta-success').style.display = 'block';
-      } else {
-        alert('Algo salió mal. Inténtalo de nuevo.');
-      }
-    });
-  });
-</script>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {

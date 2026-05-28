@@ -1,0 +1,1121 @@
+---
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import StoreHeader from '../components/StoreHeader.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
+
+import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
+import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
+import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const checkoutConfig = {
+  products: PRODUCTS.map(p => ({
+    priceId: p.priceId,
+    name: p.name,
+    priceInCents: p.priceInCents,
+    priceDisplay: p.priceDisplay,
+  })),
+  shippingZones: SHIPPING_ZONES,
+  pickupPoints: PICKUP_POINTS,
+};
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
+    <meta name="robots" content="noindex" />
+    <title>Finalizar pedido — Mojo Pasión</title>
+
+  </head>
+
+  <body>
+    <!-- Fondo fijo — position:fixed es la técnica robusta en iOS (background-attachment:fixed no funciona en Safari móvil) -->
+    <div class="co-bg" aria-hidden="true">
+      <div class="co-bg-overlay"></div>
+    </div>
+
+    <StoreHeader />
+
+    <main class="co-main">
+      <div class="co-container">
+
+        <!-- ── a. Cesta ── -->
+        <h2 class="co-section-title">Cesta</h2>
+        <div class="co-card">
+        <section class="co-section">
+          <div class="co-products" id="co-products">
+            {PRODUCTS.map((product) => (
+              <div class="co-product-row" data-price-id={product.priceId}>
+                <Image
+                  src={product.image}
+                  alt={product.imageAlt}
+                  class="co-product-thumb"
+                  width={112}
+                  height={112}
+                />
+                <div class="co-product-info">
+                  <span class="co-product-name">{product.name}</span>
+                  <div class="co-qty-ctrl">
+                    <button
+                      class="co-qty-btn"
+                      data-action="minus"
+                      data-price-id={product.priceId}
+                      aria-label={`Quitar uno de ${product.name}`}
+                      type="button"
+                    >−</button>
+                    <span class="co-qty-val" id={`qty-${product.priceId}`}>0</span>
+                    <button
+                      class="co-qty-btn"
+                      data-action="plus"
+                      data-price-id={product.priceId}
+                      aria-label={`Añadir uno de ${product.name}`}
+                      type="button"
+                    >+</button>
+                  </div>
+                </div>
+                <span class="co-product-total" id={`total-${product.priceId}`}>—</span>
+              </div>
+            ))}
+          </div>
+          <div class="co-subtotal-row">
+            <span class="co-subtotal-label">Subtotal</span>
+            <span class="co-subtotal-val" id="co-subtotal">—</span>
+          </div>
+          <p class="co-empty-msg" id="co-empty-msg" style="display:none">
+            Selecciona al menos un tarro para continuar.
+          </p>
+        </section>
+        </div>
+
+        <!-- ── b. Entrega ── -->
+        <h2 class="co-section-title">Entrega</h2>
+        <div class="co-card">
+        <section class="co-section co-section-last">
+
+          <!-- Opciones de método -->
+          <div class="co-method-opts">
+            <label class="co-method-label" for="method-shipping">
+              <input type="radio" name="delivery" value="shipping" id="method-shipping" checked />
+              <div class="co-method-info">
+                <span class="co-method-name">Envío a domicilio</span>
+                <span class="co-method-sub">3–7 días · Canarias</span>
+              </div>
+              <span class="co-method-cost" id="shipping-cost-display">—</span>
+            </label>
+
+            <label class="co-method-label" for="method-pickup">
+              <input type="radio" name="delivery" value="pickup" id="method-pickup" />
+              <div class="co-method-info">
+                <span class="co-method-name">Recoger en punto de entrega</span>
+                <span class="co-method-sub">Tenerife · Te avisamos</span>
+              </div>
+              <span class="co-method-cost co-free">Gratis</span>
+            </label>
+          </div>
+
+          <!-- Detalles: envío a domicilio -->
+          <div id="shipping-fields">
+            <div class="form-group">
+              <label class="form-label" for="postal-code">Código postal</label>
+              <input
+                type="text"
+                id="postal-code"
+                class="form-input"
+                maxlength="5"
+                placeholder="38000"
+                inputmode="numeric"
+                autocomplete="postal-code"
+                aria-required="true"
+              />
+              <div id="zone-message" class="zone-message" style="display:none" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <!-- Detalles: recogida -->
+          <div id="pickup-fields" style="display:none">
+            <div class="form-group">
+              <label class="form-label" for="pickup-point">Punto de recogida</label>
+              <select id="pickup-point" class="form-select" aria-required="true">
+                <option value="">Elige punto de recogida</option>
+                {PICKUP_POINTS.map(p => (
+                  <option value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+            <p class="co-notice">
+              Te avisaremos para concertar la entrega en el punto elegido.
+            </p>
+          </div>
+        </section>
+        </div>
+
+        <!-- ── c+d. Resumen + Pagar ── -->
+        <h2 class="co-section-title">Resumen</h2>
+        <div class="co-card">
+        <div class="co-summary">
+          <div class="co-summary-line">
+            <span>Subtotal</span>
+            <span id="summary-subtotal">—</span>
+          </div>
+          <div class="co-summary-line" id="summary-shipping-row" style="display:none">
+            <span>Envío</span>
+            <span id="summary-shipping">—</span>
+          </div>
+          <div id="co-incentivo" class="co-incentivo-inline" style="display:none" aria-live="polite"></div>
+          <div class="co-total-row">
+            <span class="co-total-label">Total</span>
+            <div class="co-total-right">
+              <strong class="co-total-val" id="co-total">—</strong>
+              <p class="co-tax-note">Impuestos incluidos</p>
+            </div>
+          </div>
+
+          <label class="co-consent-label">
+            <input type="checkbox" id="marketing-consent" class="co-consent-check" />
+            <span class="co-consent-text">Avísame si hay promociones y/o novedades en Mojo Pasión</span>
+          </label>
+
+          <button id="submit-btn" class="submit-btn" type="button" disabled>
+            <span class="submit-btn-inner">
+              Pago seguro
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </span>
+          </button>
+          <p id="submit-error" class="submit-error" style="display:none" role="alert"></p>
+          <p class="submit-note">Serás redirigido a Stripe para completar el pago de forma segura.</p>
+        </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script define:vars={{ checkoutConfig }} is:inline>
+      // ── Estado ──────────────────────────────────────────────────────────────
+      var qtys = {};          // { priceId: qty }
+      var currentZone = null;
+      var shippingCost = 0;
+      var selectedMethod = 'shipping';
+
+      var products = checkoutConfig.products;
+      var zones    = checkoutConfig.shippingZones;
+
+      function fmtEur(cents) {
+        return (cents / 100).toFixed(2).replace('.', ',') + ' €';
+      }
+
+      // ── Inicializa cantidades desde el carrito ───────────────────────────────
+      function initQtys() {
+        var cart = window.Cart.get();
+        products.forEach(function (p) {
+          var item = cart.find(function (i) { return i.priceId === p.priceId; });
+          qtys[p.priceId] = item ? item.quantity : 0;
+        });
+      }
+
+      // ── Sincroniza qtys → localStorage (reconstruye el carrito) ─────────────
+      function syncCart() {
+        var items = [];
+        products.forEach(function (p) {
+          if (qtys[p.priceId] > 0) {
+            items.push({
+              priceId: p.priceId,
+              name: p.name,
+              priceInCents: p.priceInCents,
+              priceDisplay: p.priceDisplay,
+              quantity: qtys[p.priceId],
+            });
+          }
+        });
+        window.Cart.setAll(items);
+      }
+
+      // ── Subtotal de la selección actual ─────────────────────────────────────
+      function calcSubtotal() {
+        return products.reduce(function (s, p) {
+          return s + p.priceInCents * (qtys[p.priceId] || 0);
+        }, 0);
+      }
+
+      function totalItems() {
+        return products.reduce(function (s, p) { return s + (qtys[p.priceId] || 0); }, 0);
+      }
+
+      // ── Renderiza las cantidades y totales por producto ──────────────────────
+      function renderQtys() {
+        products.forEach(function (p) {
+          var q = qtys[p.priceId] || 0;
+          var qEl = document.getElementById('qty-' + p.priceId);
+          var tEl = document.getElementById('total-' + p.priceId);
+          if (qEl) qEl.textContent = String(q);
+          if (tEl) tEl.textContent = q > 0 ? fmtEur(p.priceInCents * q) : '—';
+        });
+
+        var sub = calcSubtotal();
+        var subtotalEl = document.getElementById('co-subtotal');
+        var summarySubEl = document.getElementById('summary-subtotal');
+        if (subtotalEl) subtotalEl.textContent = sub > 0 ? fmtEur(sub) : '—';
+        if (summarySubEl) summarySubEl.textContent = sub > 0 ? fmtEur(sub) : '—';
+
+        var emptyMsg = document.getElementById('co-empty-msg');
+        if (emptyMsg) emptyMsg.style.display = totalItems() === 0 ? 'block' : 'none';
+
+        recalcShipping();
+        updateIncentivo();
+        updateTotal();
+        validateBtn();
+      }
+
+      // ── Coste de envío ───────────────────────────────────────────────────────
+      function recalcShipping() {
+        if (!currentZone || selectedMethod !== 'shipping') {
+          shippingCost = 0;
+          return;
+        }
+        var zone = zones[currentZone];
+        var sub  = calcSubtotal();
+        shippingCost = sub >= zone.freeFromInCents ? 0 : zone.costInCents;
+
+        var costEl = document.getElementById('shipping-cost-display');
+        if (costEl) {
+          if (shippingCost === 0) {
+            costEl.textContent = 'Gratis';
+            costEl.classList.add('co-free');
+          } else {
+            costEl.textContent = fmtEur(shippingCost);
+            costEl.classList.remove('co-free');
+          }
+        }
+      }
+
+      // ── Incentivo de envío gratis ────────────────────────────────────────────
+      function updateIncentivo() {
+        var incEl = document.getElementById('co-incentivo');
+        if (!incEl) return;
+
+        // Solo en domicilio, con CP válido y carrito no vacío
+        if (selectedMethod !== 'shipping' || !currentZone || totalItems() === 0) {
+          incEl.style.display = 'none';
+          return;
+        }
+
+        var zone = zones[currentZone];
+        var sub  = calcSubtotal();
+
+        if (sub >= zone.freeFromInCents) {
+          // Ya es gratis: no mostrar nada — la línea de envío del resumen ya dice "Gratis"
+          incEl.style.display = 'none';
+        } else {
+          var needed = zone.freeFromInCents - sub;
+          var tarros = Math.ceil(needed / products[0].priceInCents);
+          var plural = tarros > 1 ? 's' : '';
+          incEl.innerHTML =
+            '<span class="co-incentivo-text">Añade ' + tarros + ' tarro' + plural + ' más y el envío te sale <span class="co-incentivo-green">gratis</span>.</span>' +
+            '<button type="button" class="co-incentivo-btn" id="incentivo-add-btn">Añade ' + tarros + ' más</button>';
+          incEl.style.display = 'flex';
+
+          var addBtn = document.getElementById('incentivo-add-btn');
+          if (addBtn) {
+            addBtn.addEventListener('click', function () {
+              // producto con mayor cantidad; si empate, el primero
+              var target = products.reduce(function (best, p) {
+                return (qtys[p.priceId] || 0) >= (qtys[best.priceId] || 0) ? p : best;
+              }, products[0]);
+              qtys[target.priceId] = (qtys[target.priceId] || 0) + tarros;
+              syncCart();
+              renderQtys();
+            });
+          }
+        }
+      }
+
+      // ── Total ────────────────────────────────────────────────────────────────
+      function updateTotal() {
+        var totalEl    = document.getElementById('co-total');
+        var shRowEl    = document.getElementById('summary-shipping-row');
+        var shValEl    = document.getElementById('summary-shipping');
+
+        if (totalItems() === 0) {
+          if (totalEl) totalEl.textContent = '—';
+          if (shRowEl) shRowEl.style.display = 'none';
+          return;
+        }
+
+        var sub = calcSubtotal();
+
+        if (selectedMethod === 'pickup') {
+          if (shRowEl) shRowEl.style.display = 'none';
+          if (totalEl) totalEl.textContent = fmtEur(sub);
+          return;
+        }
+
+        // shipping — solo muestra fila envío si ya validó el CP
+        if (currentZone) {
+          if (shRowEl) shRowEl.style.display = 'flex';
+          if (shValEl) shValEl.textContent = shippingCost === 0 ? 'Gratis' : fmtEur(shippingCost);
+          if (totalEl) totalEl.textContent = fmtEur(sub + shippingCost);
+        } else {
+          if (shRowEl) shRowEl.style.display = 'none';
+          if (totalEl) totalEl.textContent = '—';
+        }
+      }
+
+      // ── Valida botón de pago ─────────────────────────────────────────────────
+      function validateBtn() {
+        var btn = document.getElementById('submit-btn');
+        if (!btn) return;
+        var valid = false;
+
+        if (totalItems() > 0) {
+          if (selectedMethod === 'shipping' && currentZone) {
+            valid = true;
+          } else if (selectedMethod === 'pickup') {
+            var point = document.getElementById('pickup-point').value;
+            valid = point !== '';
+          }
+        }
+        btn.disabled = !valid;
+      }
+
+      // ── Validación del código postal ─────────────────────────────────────────
+      function validateCP(cp) {
+        var msgEl  = document.getElementById('zone-message');
+        var prefix = cp.slice(0, 2);
+
+        if (prefix === zones.tenerife.postalPrefix) {
+          currentZone = 'tenerife';
+          msgEl.className = 'zone-message zone-ok';
+          msgEl.textContent = '✓ Canarias · envío disponible';
+        } else if (prefix === zones.canarias.postalPrefix) {
+          currentZone = 'canarias';
+          msgEl.className = 'zone-message zone-ok';
+          msgEl.textContent = '✓ Canarias · envío disponible';
+        } else {
+          currentZone = null;
+          msgEl.className = 'zone-message zone-error';
+          msgEl.innerHTML = 'De momento solo enviamos a Canarias. ¿Quieres recibirlo en la península? Escríbenos a <a href="mailto:hola@mojopasion.com" class="co-link">hola@mojopasion.com</a>';
+        }
+        msgEl.style.display = 'block';
+
+        recalcShipping();
+        updateIncentivo();
+        updateTotal();
+        validateBtn();
+      }
+
+      // ── Inicialización ───────────────────────────────────────────────────────
+      document.addEventListener('DOMContentLoaded', function () {
+        initQtys();
+        renderQtys();
+
+        // Botones +/−
+        document.querySelectorAll('.co-qty-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var priceId = btn.dataset.priceId;
+            var action  = btn.dataset.action;
+            var current = qtys[priceId] || 0;
+            qtys[priceId] = Math.max(0, Math.min(20, current + (action === 'plus' ? 1 : -1)));
+            syncCart();
+            renderQtys();
+          });
+        });
+
+        // Cambio de método de entrega
+        document.querySelectorAll('input[name="delivery"]').forEach(function (radio) {
+          radio.addEventListener('change', function () {
+            selectedMethod = this.value;
+            var shFields  = document.getElementById('shipping-fields');
+            var pkFields  = document.getElementById('pickup-fields');
+
+            if (selectedMethod === 'shipping') {
+              if (shFields) shFields.style.display = 'block';
+              if (pkFields) pkFields.style.display = 'none';
+            } else {
+              if (shFields) shFields.style.display = 'none';
+              if (pkFields) pkFields.style.display = 'block';
+              currentZone = 'pickup'; // para que updateTotal no muestre "—"
+            }
+
+            recalcShipping();
+            updateIncentivo();
+            updateTotal();
+            validateBtn();
+          });
+        });
+
+        // CP: validar al completar 5 dígitos
+        var cpInput = document.getElementById('postal-code');
+        if (cpInput) {
+          cpInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+            if (this.value.length === 5) {
+              validateCP(this.value);
+            } else {
+              currentZone = null;
+              var msgEl = document.getElementById('zone-message');
+              if (msgEl) msgEl.style.display = 'none';
+              recalcShipping();
+              updateIncentivo();
+              updateTotal();
+              validateBtn();
+            }
+          });
+        }
+
+        // Recogida: validar al cambiar punto
+        var pickupEl = document.getElementById('pickup-point');
+        if (pickupEl) { pickupEl.addEventListener('change', validateBtn); pickupEl.addEventListener('input', validateBtn); }
+
+        // Botón de pago
+        var btn = document.getElementById('submit-btn');
+        if (btn) {
+          btn.addEventListener('click', async function () {
+            var errorEl = document.getElementById('submit-error');
+            var items = products
+              .filter(function (p) { return (qtys[p.priceId] || 0) > 0; })
+              .map(function (p) { return { priceId: p.priceId, quantity: qtys[p.priceId] }; });
+
+            if (!items.length) return;
+
+            // Analítica begin_checkout / InitiateCheckout
+            var cartVal = calcSubtotal() / 100;
+            if (typeof window.gtag === 'function') {
+              gtag('event', 'begin_checkout', {
+                currency: 'EUR', value: cartVal,
+                items: items.map(function (i) {
+                  var p = products.find(function (x) { return x.priceId === i.priceId; });
+                  return { item_id: i.priceId, item_name: p.name, price: p.priceInCents / 100, quantity: i.quantity };
+                }),
+              });
+            }
+            if (typeof window.fbq === 'function') {
+              fbq('track', 'InitiateCheckout', {
+                currency: 'EUR', value: cartVal,
+                content_ids: items.map(function (i) { return i.priceId; }),
+                num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
+              });
+            }
+
+            // Guarda método para /gracias
+            sessionStorage.setItem('mojo-delivery-method', selectedMethod);
+            if (selectedMethod === 'pickup') {
+              var sel = document.getElementById('pickup-point');
+              sessionStorage.setItem('mojo-pickup-point', sel.options[sel.selectedIndex].text);
+            }
+
+            var payload = {
+              items: items,
+              deliveryMethod: selectedMethod,
+              marketingConsent: document.getElementById('marketing-consent').checked,
+            };
+            if (selectedMethod === 'shipping') {
+              payload.postalCode = document.getElementById('postal-code').value;
+            } else {
+              payload.pickupPoint = document.getElementById('pickup-point').value;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Redirigiendo a Stripe…';
+            if (errorEl) errorEl.style.display = 'none';
+
+            try {
+              var res  = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
+              var data = await res.json();
+              if (!res.ok || !data.url) throw new Error(data.error || 'Error al iniciar el pago');
+              window.location.href = data.url;
+            } catch (err) {
+              btn.disabled = false;
+              btn.textContent = 'Pago seguro';
+              if (errorEl) {
+                errorEl.textContent = err.message || 'Error inesperado. Inténtalo de nuevo.';
+                errorEl.style.display = 'block';
+              }
+            }
+          });
+        }
+      });
+    </script>
+
+    <style>
+      /* ── Fondo fijo ─────────────────────────────────────────────────────────── */
+      .co-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: url('/checkout-bg.avif') center / cover no-repeat;
+      }
+
+      .co-bg-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.30); /* ← ajustar opacidad aquí */
+      }
+
+      /* ── Layout ─────────────────────────────────────────────────────────────── */
+      .co-main {
+        position: relative;
+        z-index: 1;
+        padding-top: 80px;
+        min-height: 100vh;
+      }
+
+      .co-container {
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 3rem 2rem 5rem;
+      }
+
+      .co-card {
+        background: #1c1c1c;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        padding: 1.75rem 2rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .co-section {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .co-section-last {
+        margin-bottom: 0;
+      }
+
+      .co-section-title {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 0.6rem;
+      }
+
+      /* Productos con qty controls */
+      .co-products {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin-bottom: 1rem;
+      }
+
+      .co-product-row {
+        display: flex;
+        align-items: center;
+        padding: 0.9rem 0;
+        border-bottom: 0.5px solid #1e1e1e;
+        gap: 0.9rem;
+      }
+
+      .co-product-row:last-child { border-bottom: none; }
+
+      .co-product-thumb {
+        width: 56px;
+        height: 56px;
+        border-radius: 4px;
+        object-fit: cover;
+        flex-shrink: 0;
+        display: block;
+      }
+
+      .co-product-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .co-product-name {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--color-crema);
+      }
+
+      .co-qty-ctrl {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .co-qty-btn {
+        background: none;
+        border: 0.5px solid #333;
+        color: var(--color-crema);
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.2s, color 0.2s;
+        font-family: var(--font-sans);
+        line-height: 1;
+        padding: 0;
+      }
+
+      .co-qty-btn:hover {
+        border-color: var(--color-rojo);
+        color: var(--color-rojo);
+      }
+
+      .co-qty-val {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--color-crema);
+        min-width: 24px;
+        text-align: center;
+      }
+
+      .co-product-total {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+        min-width: 56px;
+        text-align: right;
+        flex-shrink: 0;
+        align-self: center;
+      }
+
+      .co-subtotal-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.85rem 0 0;
+        border-top: 0.5px solid #2a2a2a;
+        margin-top: 0.25rem;
+      }
+
+      .co-subtotal-label {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+      }
+
+      .co-subtotal-val {
+        font-family: var(--font-serif);
+        font-size: 20px;
+        font-weight: 400;
+        color: var(--color-crema);
+        font-variant-numeric: lining-nums;
+        font-feature-settings: "lnum" 1;
+      }
+
+      .co-empty-msg {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: var(--color-rojo);
+        margin-top: 0.75rem;
+      }
+
+      /* Métodos de entrega */
+      .co-method-opts {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .co-method-label {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border: 0.5px solid #2a2a2a;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        gap: 1rem;
+      }
+
+      .co-method-label:has(input:checked) {
+        border-color: var(--color-rojo);
+      }
+
+      .co-method-label input[type="radio"] {
+        accent-color: var(--color-rojo);
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+      }
+
+      .co-method-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      .co-method-name {
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--color-crema);
+      }
+
+      .co-method-sub {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        color: #777;
+        letter-spacing: 0.3px;
+      }
+
+      .co-method-cost {
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+        flex-shrink: 0;
+      }
+
+      .co-free { color: #90c890; font-weight: 300; }
+
+      /* Formulario */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+        margin-bottom: 0.5rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background: #161616;
+        border: 0.5px solid #2a2a2a;
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 16px;
+        font-weight: 300;
+        outline: none;
+        transition: border-color 0.2s;
+        -webkit-appearance: none;
+        border-radius: 0;
+        box-sizing: border-box;
+      }
+
+      .form-input:focus { border-color: var(--color-gris); }
+      .form-input::placeholder { color: #3a3a3a; }
+
+
+
+
+
+      .form-select {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background: #161616;
+        border: 0.5px solid #2a2a2a;
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 300;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        border-radius: 0;
+        box-sizing: border-box;
+      }
+
+      .form-select option { background: #1a1a1a; }
+
+      /* Zona feedback */
+      .zone-message {
+        margin-top: 0.75rem;
+        padding: 0.7rem 1rem;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        line-height: 1.6;
+      }
+
+      .zone-ok {
+        background: rgba(100, 180, 100, 0.08);
+        border: 0.5px solid rgba(100, 180, 100, 0.3);
+        color: #90c890;
+      }
+
+      .zone-error {
+        background: rgba(232, 0, 45, 0.07);
+        border: 0.5px solid rgba(232, 0, 45, 0.3);
+        color: #e0a0a0;
+      }
+
+      .zone-error a, .co-link { color: var(--color-rojo); }
+
+      /* Aviso */
+      .co-notice {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #777;
+        line-height: 1.6;
+        margin-top: 0.5rem;
+      }
+
+      /* Incentivo inline — estilos en <style is:global> (elementos inyectados por JS) */
+      .co-incentivo-inline {
+        display: flex;
+        gap: 0;
+        margin: 0.35rem 0 0.6rem;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      /* Resumen */
+      .co-summary {
+        padding-top: 0;
+      }
+
+      .co-summary-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.4rem 0;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 300;
+        color: #888;
+      }
+
+      .co-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0.75rem 0 1.25rem;
+        border-top: 0.5px solid #2a2a2a;
+        margin-top: 0.75rem;
+      }
+
+      .co-total-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.2rem;
+      }
+
+      .co-total-label {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--color-gris);
+      }
+
+      .co-total-val {
+        font-family: var(--font-serif);
+        font-size: 26px;
+        font-weight: 400;
+        color: var(--color-crema);
+        font-variant-numeric: lining-nums;
+        font-feature-settings: "lnum" 1;
+      }
+
+      /* Botón de pago */
+      .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 1.1rem 2rem;
+        background: var(--color-rojo);
+        border: none;
+        color: #fff;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        text-align: center;
+      }
+
+      .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+      .submit-btn:not(:disabled):hover { opacity: 0.85; }
+
+      .submit-btn-inner {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6em;
+      }
+
+      .submit-error {
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: rgba(232, 0, 45, 0.07);
+        border: 0.5px solid rgba(232, 0, 45, 0.3);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #e0a0a0;
+        line-height: 1.5;
+      }
+
+      .submit-note {
+        margin-top: 0.75rem;
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        color: #777;
+        text-align: center;
+        letter-spacing: 0.3px;
+      }
+
+      .co-tax-note {
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 300;
+        color: #777;
+        text-align: right;
+        letter-spacing: 0.3px;
+        margin: 0;
+      }
+
+      /* Consentimiento de marketing */
+      .co-consent-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin: 0 0 1.25rem;
+        cursor: pointer;
+      }
+
+      .co-consent-check {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        accent-color: var(--color-rojo);
+        cursor: pointer;
+      }
+
+      .co-consent-text {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #777;
+        line-height: 1.5;
+        letter-spacing: 0.2px;
+      }
+
+      @media (max-width: 767px) {
+        .co-container { padding: 2rem 1.25rem 4rem; }
+      }
+
+      @media (min-width: 768px) {
+        /* Body text — names, delivery options */
+        .co-product-name   { font-size: 16px; }
+        .co-qty-val        { font-size: 16px; }
+        .co-method-name    { font-size: 16px; }
+
+        /* Secondary — unit prices, subtitles */
+
+        .co-method-sub     { font-size: 13px; }
+
+        /* Tertiary — line totals, method cost, summary */
+        .co-product-total  { font-size: 15px; }
+        .co-method-cost    { font-size: 15px; }
+        .co-summary-line   { font-size: 15px; }
+
+        /* Numeric displays */
+        .co-subtotal-val   { font-size: 24px; }
+        .co-total-val      { font-size: 30px; }
+
+        /* Uppercase labels — slight nudge for legibility */
+        .form-label        { font-size: 12px; }
+        .co-subtotal-label { font-size: 12px; }
+        .co-total-label    { font-size: 12px; }
+
+        /* Supporting text */
+        .zone-message      { font-size: 13px; }
+        .co-notice         { font-size: 13px; }
+        .co-incentivo-inline { font-size: 13px; }
+        .co-empty-msg      { font-size: 13px; }
+
+        /* CTA & footer notes */
+        .submit-btn        { font-size: 13px; }
+        .submit-error      { font-size: 13px; }
+        .submit-note       { font-size: 12px; }
+        .co-tax-note       { font-size: 12px; }
+      }
+    </style>
+
+    <CookieConsent />
+
+    <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->
+    <style is:global>
+      .co-incentivo-text {
+        flex: 1;
+        padding: 0.85rem 1rem;
+        background: #1c1c1c;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      .co-incentivo-green {
+        color: #90c890;
+        font-weight: 300;
+      }
+
+      .co-incentivo-btn {
+        flex-shrink: 0;
+        padding: 0 1.1rem;
+        background: transparent;
+        border: 1px solid rgba(245, 237, 216, 0.4);
+        color: var(--color-crema);
+        font-family: var(--font-sans);
+        font-size: 10px;
+        font-weight: 400;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.2s, color 0.2s;
+      }
+
+      .co-incentivo-btn:hover {
+        border-color: var(--color-crema);
+        color: var(--color-crema);
+      }
+
+      @media (min-width: 768px) {
+        .co-incentivo-text { font-size: 13px; }
+      }
+    </style>
+  </body>
+</html>
