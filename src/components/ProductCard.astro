@@ -50,31 +50,32 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
 <script>
   import { add } from '../lib/cart.ts';
 
-  document.querySelectorAll<HTMLButtonElement>('.product-add-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const { priceId, priceInCents: priceInCentsStr, priceDisplay } = btn.dataset;
-      const productName = btn.dataset.name ?? '';
-      if (!priceId || !priceInCentsStr || !priceDisplay) return;
-      const priceInCents = Number(priceInCentsStr);
+  document.addEventListener('click', (e: Event) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.product-add-btn');
+    if (!btn) return;
 
-      add({ priceId, name: productName, priceInCents, priceDisplay });
+    const { priceId, priceInCents: priceInCentsStr, priceDisplay } = btn.dataset;
+    const productName = btn.dataset.name ?? '';
+    if (!priceId || !priceInCentsStr || !priceDisplay) return;
+    const priceInCents = Number(priceInCentsStr);
 
-      const value = priceInCents / 100;
-      const w = window as unknown as Record<string, unknown>;
-      if (typeof w['gtag'] === 'function') {
-        (w['gtag'] as (...a: unknown[]) => void)('event', 'add_to_cart', {
-          currency: 'EUR', value,
-          items: [{ item_id: priceId, item_name: productName, price: value, quantity: 1 }],
-        });
-      }
-      if (typeof w['fbq'] === 'function') {
-        (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
-          content_ids: [priceId], content_name: productName, currency: 'EUR', value,
-        });
-      }
+    add({ priceId, name: productName, priceInCents, priceDisplay });
 
-      window.location.href = '/checkout';
-    });
+    const value = priceInCents / 100;
+    const w = window as unknown as Record<string, unknown>;
+    if (typeof w['gtag'] === 'function') {
+      (w['gtag'] as (...a: unknown[]) => void)('event', 'add_to_cart', {
+        currency: 'EUR', value,
+        items: [{ item_id: priceId, item_name: productName, price: value, quantity: 1 }],
+      });
+    }
+    if (typeof w['fbq'] === 'function') {
+      (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
+        content_ids: [priceId], content_name: productName, currency: 'EUR', value,
+      });
+    }
+
+    window.location.href = '/checkout';
   });
 </script>
 
