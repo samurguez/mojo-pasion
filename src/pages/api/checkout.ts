@@ -16,6 +16,7 @@ interface CheckoutBody {
   deliveryMethod: 'shipping' | 'pickup';
   postalCode?: string;
   pickupPoint?: string;
+  marketingConsent?: boolean;
 }
 
 // Tipo local para los line items: precio ya creado en Stripe | precio ad-hoc (envío)
@@ -62,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ error: 'Payload inválido' }, 400);
   }
 
-  const { items, deliveryMethod, postalCode, pickupPoint } = body;
+  const { items, deliveryMethod, postalCode, pickupPoint, marketingConsent } = body;
 
   if (!Array.isArray(items) || items.length === 0) return json({ error: 'Carrito vacío' }, 400);
 
@@ -119,6 +120,7 @@ export const POST: APIRoute = async ({ request }) => {
     locale: 'es' as const,
     metadata: {
       delivery_method: deliveryMethod,
+      marketing_consent: marketingConsent ? 'true' : 'false',
       ...(deliveryMethod === 'shipping' && postalCode ? { postal_code: postalCode } : {}),
       ...(deliveryMethod === 'pickup' && pickupPoint ? {
         pickup_point: PICKUP_POINTS.find(p => p.id === pickupPoint)?.label ?? pickupPoint,

@@ -210,6 +210,11 @@ const checkoutConfig = {
             </div>
           </div>
 
+          <label class="co-consent-label">
+            <input type="checkbox" id="marketing-consent" class="co-consent-check" />
+            <span class="co-consent-text">Avísame si hay promociones y/o novedades en Mojo Pasión</span>
+          </label>
+
           <button id="submit-btn" class="submit-btn" type="button" disabled>
             <span class="submit-btn-inner">
               Pago seguro
@@ -539,7 +544,11 @@ const checkoutConfig = {
               sessionStorage.setItem('mojo-pickup-point', sel.options[sel.selectedIndex].text);
             }
 
-            var payload = { items: items, deliveryMethod: selectedMethod };
+            var payload = {
+              items: items,
+              deliveryMethod: selectedMethod,
+              marketingConsent: document.getElementById('marketing-consent').checked,
+            };
             if (selectedMethod === 'shipping') {
               payload.postalCode = document.getElementById('postal-code').value;
             } else {
@@ -1025,6 +1034,33 @@ const checkoutConfig = {
         text-align: right;
         letter-spacing: 0.3px;
         margin: 0;
+      }
+
+      /* Consentimiento de marketing */
+      .co-consent-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin: 0 0 1.25rem;
+        cursor: pointer;
+      }
+
+      .co-consent-check {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        accent-color: var(--color-rojo);
+        cursor: pointer;
+      }
+
+      .co-consent-text {
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #777;
+        line-height: 1.5;
+        letter-spacing: 0.2px;
       }
 
       @media (max-width: 767px) {
