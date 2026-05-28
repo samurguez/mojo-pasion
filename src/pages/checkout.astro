@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { Image } from 'astro:assets';
 import StoreHeader from '../components/StoreHeader.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
@@ -31,41 +32,6 @@ const checkoutConfig = {
     <meta name="robots" content="noindex" />
     <title>Finalizar pedido — Mojo Pasión</title>
 
-    <!-- Meta Pixel -->
-    <script is:inline>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '982174691398586');
-      fbq('track', 'PageView');
-    </script>
-    <noscript>
-      <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1" />
-    </noscript>
-
-    <!-- GA4 -->
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      window.mojoCookiesAccepted = false;
-      function loadGA() {
-        if (window.mojoCookiesAccepted) return;
-        window.mojoCookiesAccepted = true;
-        var s = document.createElement('script');
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
-        s.async = true;
-        document.head.appendChild(s);
-        gtag('config', 'G-4K3BK6E95M');
-      }
-      if (localStorage.getItem('mojo-cookies') === 'accepted') loadGA();
-    </script>
   </head>
 
   <body>
@@ -1104,6 +1070,8 @@ const checkoutConfig = {
         .co-tax-note       { font-size: 12px; }
       }
     </style>
+
+    <CookieConsent />
 
     <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->
     <style is:global>

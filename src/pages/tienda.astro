@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import StoreHeader from '../components/StoreHeader.astro';
 import ProductCard from '../components/ProductCard.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 import { PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
@@ -29,40 +30,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
     <meta property="og:description" content="Mojo rojo palmero artesano. Suave o picante, hecho a mano en Canarias." />
     <meta property="og:image" content="https://www.mojopasion.com/images/hero.jpg" />
 
-    <!-- Meta Pixel -->
-    <script is:inline>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '982174691398586');
-      fbq('track', 'PageView');
-    </script>
-    <noscript>
-      <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=982174691398586&ev=PageView&noscript=1" />
-    </noscript>
-
-    <!-- GA4 (carga solo tras aceptar cookies) -->
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      window.mojoCookiesAccepted = false;
-      function loadGA() {
-        if (window.mojoCookiesAccepted) return;
-        window.mojoCookiesAccepted = true;
-        var s = document.createElement('script');
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4K3BK6E95M';
-        s.async = true;
-        document.head.appendChild(s);
-        gtag('config', 'G-4K3BK6E95M');
-      }
-    </script>
   </head>
 
   <body>
@@ -109,33 +76,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
         <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
       </div>
     </footer>
-
-    <!-- Cookie banner -->
-    <div class="cookies-banner" id="cookies-banner">
-      <p class="cookies-text">Solo usamos cookies de análisis para mejorar nuestro servicio.</p>
-      <div class="cookies-btns">
-        <button class="cookies-accept" onclick="acceptCookies()">Aceptar</button>
-        <button class="cookies-reject" onclick="rejectCookies()">Rechazar</button>
-      </div>
-    </div>
-
-    <script is:inline>
-      function acceptCookies() {
-        localStorage.setItem('mojo-cookies', 'accepted');
-        document.getElementById('cookies-banner').style.display = 'none';
-        loadGA();
-      }
-      function rejectCookies() {
-        localStorage.setItem('mojo-cookies', 'rejected');
-        document.getElementById('cookies-banner').style.display = 'none';
-      }
-      if (localStorage.getItem('mojo-cookies') === 'accepted') {
-        loadGA();
-        document.getElementById('cookies-banner').style.display = 'none';
-      } else if (localStorage.getItem('mojo-cookies') === 'rejected') {
-        document.getElementById('cookies-banner').style.display = 'none';
-      }
-    </script>
 
     <style>
       .tienda-main {
@@ -215,57 +155,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
         letter-spacing: 0.5px;
       }
 
-      /* Cookie banner */
-      .cookies-banner {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #1a1a1a;
-        border: 0.5px solid #333;
-        padding: 1.25rem 2rem;
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        z-index: 300;
-        max-width: 700px;
-        width: 95%;
-      }
-
-      .cookies-text {
-        font-family: var(--font-sans);
-        font-size: 13px;
-        font-weight: 300;
-        color: #aaa;
-        margin: 0;
-      }
-
-      .cookies-btns { display: flex; gap: 0.75rem; flex-shrink: 0; }
-
-      .cookies-accept {
-        font-family: var(--font-sans);
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        background: var(--color-rojo);
-        color: #fff;
-        border: none;
-        padding: 0.6rem 1.25rem;
-        cursor: pointer;
-      }
-
-      .cookies-reject {
-        font-family: var(--font-sans);
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        background: transparent;
-        color: #666;
-        border: 0.5px solid #444;
-        padding: 0.6rem 1.25rem;
-        cursor: pointer;
-      }
-
       /* ── Desktop ── */
       @media (min-width: 768px) {
         .tienda-intro {
@@ -294,19 +183,8 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
           align-items: flex-start;
         }
 
-        .cookies-banner {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1rem 1.25rem;
-        }
-
-        .cookies-btns { width: 100%; }
-        .cookies-accept, .cookies-reject {
-          flex: 1;
-          text-align: center;
-        }
       }
     </style>
+    <CookieConsent />
   </body>
 </html>
