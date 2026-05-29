@@ -485,25 +485,6 @@ const checkoutConfig = {
 
             if (!items.length) return;
 
-            // Analítica begin_checkout / InitiateCheckout
-            var cartVal = calcSubtotal() / 100;
-            if (typeof window.gtag === 'function') {
-              gtag('event', 'begin_checkout', {
-                currency: 'EUR', value: cartVal,
-                items: items.map(function (i) {
-                  var p = products.find(function (x) { return x.priceId === i.priceId; });
-                  return { item_id: i.priceId, item_name: p.name, price: p.priceInCents / 100, quantity: i.quantity };
-                }),
-              });
-            }
-            if (typeof window.fbq === 'function') {
-              fbq('track', 'InitiateCheckout', {
-                currency: 'EUR', value: cartVal,
-                content_ids: items.map(function (i) { return i.priceId; }),
-                num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
-              });
-            }
-
             // Guarda método para /gracias
             sessionStorage.setItem('mojo-delivery-method', selectedMethod);
             if (selectedMethod === 'pickup') {
@@ -526,22 +507,54 @@ const checkoutConfig = {
             btn.textContent = 'Redirigiendo a Stripe…';
             if (errorEl) errorEl.style.display = 'none';
 
-            try {
-              var res  = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-              });
-              var data = await res.json();
-              if (!res.ok || !data.url) throw new Error(data.error || 'Error al iniciar el pago');
-              window.location.href = data.url;
-            } catch (err) {
-              btn.disabled = false;
-              btn.textContent = 'Pago seguro';
-              if (errorEl) {
-                errorEl.textContent = err.message || 'Error inesperado. Inténtalo de nuevo.';
-                errorEl.style.display = 'block';
+            async function doCheckout() {
+              try {
+                var res  = await fetch('/api/checkout', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload),
+                });
+                var data = await res.json();
+                if (!res.ok || !data.url) throw new Error(data.error || 'Error al iniciar el pago');
+                window.location.href = data.url;
+              } catch (err) {
+                btn.disabled = false;
+                btn.textContent = 'Pago seguro';
+                if (errorEl) {
+                  errorEl.textContent = err.message || 'Error inesperado. Inténtalo de nuevo.';
+                  errorEl.style.display = 'block';
+                }
               }
+            }
+
+            // Analítica begin_checkout / InitiateCheckout
+            var cartVal = calcSubtotal() / 100;
+            if (window._gaLoaded === true) {
+              if (window._pixelLoaded === true) {
+                fbq('track', 'InitiateCheckout', {
+                  currency: 'EUR', value: cartVal,
+                  content_ids: items.map(function (i) { return i.priceId; }),
+                  num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
+                });
+              }
+              gtag('event', 'begin_checkout', {
+                currency: 'EUR', value: cartVal,
+                items: items.map(function (i) {
+                  var p = products.find(function (x) { return x.priceId === i.priceId; });
+                  return { item_id: i.priceId, item_name: p.name, price: p.priceInCents / 100, quantity: i.quantity };
+                }),
+                event_callback: doCheckout,
+                event_timeout: 2000,
+              });
+            } else {
+              if (window._pixelLoaded === true) {
+                fbq('track', 'InitiateCheckout', {
+                  currency: 'EUR', value: cartVal,
+                  content_ids: items.map(function (i) { return i.priceId; }),
+                  num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
+                });
+              }
+              doCheckout();
             }
           });
         }
