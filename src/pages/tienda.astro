@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { PRODUCTS } from '../lib/tienda-config';
@@ -58,24 +59,7 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-row">
-        <img
-          src="/images/logo-horizontal.png"
-          alt="Mojo Pasión — mojo rojo palmero artesano canario"
-          class="footer-logo"
-          width="160"
-          height="40"
-        />
-        <div class="footer-links">
-          <a href="/aviso-legal" class="footer-link">Aviso legal</a>
-          <a href="/privacidad" class="footer-link">Política de privacidad</a>
-          <a href="https://instagram.com/mojo_pasion" target="_blank" rel="noopener" class="footer-social-link">Instagram</a>
-          <a href="https://tiktok.com/@mojopasion" target="_blank" rel="noopener" class="footer-social-link">TikTok</a>
-        </div>
-        <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
-      </div>
-    </footer>
+    <Footer />
 
     <style>
       .tienda-main {
@@ -109,52 +93,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
         padding: 0.75rem 1.25rem 4rem;
       }
 
-      /* Footer */
-      .footer {
-        background: #0a0a0a;
-        padding: 1.5rem 2.5rem;
-        border-top: 0.5px solid #1a1a1a;
-      }
-
-      .footer-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-
-      .footer-logo { height: 30px; width: auto; opacity: 0.7; }
-
-      .footer-links {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-
-      .footer-link, .footer-social-link {
-        font-family: var(--font-sans);
-        font-size: 11px;
-        font-weight: 300;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: #555;
-        text-decoration: none;
-      }
-
-      .footer-link:hover { color: var(--color-crema); }
-      .footer-social-link:hover { color: var(--color-rojo); }
-
-      .footer-copy {
-        font-family: var(--font-sans);
-        font-size: 10px;
-        font-weight: 300;
-        color: #333;
-        letter-spacing: 0.5px;
-      }
-
       /* ── Desktop ── */
       @media (min-width: 768px) {
         .tienda-intro {
@@ -172,15 +110,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
       @media (max-width: 767px) {
         .tienda-intro {
           padding: 1.5rem 1.5rem 0.5rem;
-        }
-
-        .footer {
-          padding: 1.5rem;
-        }
-
-        .footer-row {
-          flex-direction: column;
-          align-items: flex-start;
         }
 
       }
