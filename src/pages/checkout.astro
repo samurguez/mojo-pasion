@@ -529,14 +529,14 @@ const checkoutConfig = {
 
             // Analítica begin_checkout / InitiateCheckout
             var cartVal = calcSubtotal() / 100;
-            if (typeof window.fbq === 'function') {
-              fbq('track', 'InitiateCheckout', {
-                currency: 'EUR', value: cartVal,
-                content_ids: items.map(function (i) { return i.priceId; }),
-                num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
-              });
-            }
-            if (typeof window.gtag === 'function') {
+            if (window._gaLoaded === true) {
+              if (window._pixelLoaded === true) {
+                fbq('track', 'InitiateCheckout', {
+                  currency: 'EUR', value: cartVal,
+                  content_ids: items.map(function (i) { return i.priceId; }),
+                  num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
+                });
+              }
               gtag('event', 'begin_checkout', {
                 currency: 'EUR', value: cartVal,
                 items: items.map(function (i) {
@@ -547,6 +547,13 @@ const checkoutConfig = {
                 event_timeout: 2000,
               });
             } else {
+              if (window._pixelLoaded === true) {
+                fbq('track', 'InitiateCheckout', {
+                  currency: 'EUR', value: cartVal,
+                  content_ids: items.map(function (i) { return i.priceId; }),
+                  num_items: items.reduce(function (s, i) { return s + i.quantity; }, 0),
+                });
+              }
               doCheckout();
             }
           });

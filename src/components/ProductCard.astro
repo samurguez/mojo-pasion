@@ -64,12 +64,6 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
     const value = priceInCents / 100;
     const w = window as unknown as Record<string, unknown>;
 
-    if (typeof w['fbq'] === 'function') {
-      (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
-        content_ids: [priceId], content_name: productName, currency: 'EUR', value,
-      });
-    }
-
     let redirected = false;
     const doRedirect = () => {
       if (redirected) return;
@@ -77,7 +71,12 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
       window.location.href = '/checkout';
     };
 
-    if (typeof w['gtag'] === 'function') {
+    if (w['_gaLoaded'] === true) {
+      if (w['_pixelLoaded'] === true) {
+        (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
+          content_ids: [priceId], content_name: productName, currency: 'EUR', value,
+        });
+      }
       (w['gtag'] as (...a: unknown[]) => void)('event', 'add_to_cart', {
         currency: 'EUR', value,
         items: [{ item_id: priceId, item_name: productName, price: value, quantity: 1 }],
@@ -85,6 +84,11 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
         event_timeout: 2000,
       });
     } else {
+      if (w['_pixelLoaded'] === true) {
+        (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
+          content_ids: [priceId], content_name: productName, currency: 'EUR', value,
+        });
+      }
       doRedirect();
     }
   });
