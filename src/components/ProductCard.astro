@@ -63,19 +63,30 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
 
     const value = priceInCents / 100;
     const w = window as unknown as Record<string, unknown>;
-    if (typeof w['gtag'] === 'function') {
-      (w['gtag'] as (...a: unknown[]) => void)('event', 'add_to_cart', {
-        currency: 'EUR', value,
-        items: [{ item_id: priceId, item_name: productName, price: value, quantity: 1 }],
-      });
-    }
+
     if (typeof w['fbq'] === 'function') {
       (w['fbq'] as (...a: unknown[]) => void)('track', 'AddToCart', {
         content_ids: [priceId], content_name: productName, currency: 'EUR', value,
       });
     }
 
-    window.location.href = '/checkout';
+    let redirected = false;
+    const doRedirect = () => {
+      if (redirected) return;
+      redirected = true;
+      window.location.href = '/checkout';
+    };
+
+    if (typeof w['gtag'] === 'function') {
+      (w['gtag'] as (...a: unknown[]) => void)('event', 'add_to_cart', {
+        currency: 'EUR', value,
+        items: [{ item_id: priceId, item_name: productName, price: value, quantity: 1 }],
+        event_callback: doRedirect,
+        event_timeout: 2000,
+      });
+    } else {
+      doRedirect();
+    }
   });
 </script>
 
