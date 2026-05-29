@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Header from '../components/Header.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 ---
 
@@ -10,11 +11,7 @@ import CookieConsent from '../components/CookieConsent.astro';
     <title>Aviso Legal — Mojo Pasión</title>
   </head>
   <body>
-    <header class="legal-header">
-      <a href="/">
-        <img src="/images/logo-horizontal.png" alt="Mojo Pasión" class="legal-logo" />
-      </a>
-    </header>
+    <Header showCart={false} />
     <main class="legal-content">
       <h1>Aviso Legal</h1>
 
@@ -48,20 +45,14 @@ import CookieConsent from '../components/CookieConsent.astro';
     font-family: var(--font-sans);
   }
 
-  .legal-header {
-    padding: 1.5rem 3rem;
-    border-bottom: 0.5px solid #222222;
-  }
-
-  .legal-logo {
-    height: 36px;
-    width: auto;
-  }
-
   .legal-content {
     max-width: 760px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    padding: 6rem 2rem 4rem;
+  }
+
+  @media (max-width: 768px) {
+    .legal-content { padding: 5rem 1.5rem 3rem; }
   }
 
   .legal-content h1 {

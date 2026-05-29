@@ -1,0 +1,187 @@
+---
+interface Props {
+  showCart?: boolean;
+  showCta?: boolean;
+  transparentOnTop?: boolean;
+}
+const { showCart = true, showCta = false, transparentOnTop = false } = Astro.props;
+---
+
+<header class:list={['header', { 'is-transparent-on-top': transparentOnTop }]}>
+  <a href="/" class="header-logo" aria-label="Volver a inicio">
+    <img
+      src="/images/logo-horizontal.png"
+      alt="Mojo Pasión"
+      width="220"
+      height="44"
+    />
+  </a>
+
+  {(showCart || showCta) && (
+    <div class="header-actions">
+      {showCart && (
+        <a href="/checkout" id="cart-link" class="cart-toggle" aria-label="Ver carrito">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+          >
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 01-8 0" />
+          </svg>
+          <span id="cart-count" class="cart-count" aria-label="artículos en el carrito">0</span>
+        </a>
+      )}
+
+      {showCta && (
+        <a href="/tienda" class="header-cta">Comprar</a>
+      )}
+    </div>
+  )}
+</header>
+
+<script>
+  import { count } from '../lib/cart.ts';
+
+  function updateBadge(): void {
+    const badge = document.getElementById('cart-count') as HTMLElement | null;
+    if (!badge) return;
+    const n = count();
+    badge.textContent = String(n);
+    badge.style.display = n > 0 ? 'flex' : 'none';
+  }
+
+  document.addEventListener('DOMContentLoaded', updateBadge);
+  window.addEventListener('cart:update', updateBadge);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.querySelector('.header.is-transparent-on-top') as HTMLElement | null;
+    if (!header) return;
+
+    const updateScrolled = () => {
+      if (window.scrollY > 50) {
+        header.classList.add('is-scrolled');
+      } else {
+        header.classList.remove('is-scrolled');
+      }
+    };
+
+    updateScrolled();
+    window.addEventListener('scroll', updateScrolled, { passive: true });
+  });
+</script>
+
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 2.5rem;
+    background: var(--color-negro);
+    border-bottom: 0.5px solid #222;
+    backdrop-filter: blur(8px);
+    transition: background 0.3s ease, border-bottom-color 0.3s ease;
+  }
+
+  .header.is-transparent-on-top {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .header.is-transparent-on-top.is-scrolled {
+    background: var(--color-negro);
+    border-bottom-color: #222;
+  }
+
+  .header-logo img {
+    height: 44px;
+    width: auto;
+    display: block;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cart-toggle {
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-crema);
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .cart-toggle:hover {
+    color: var(--color-rojo);
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background: var(--color-rojo);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    line-height: 1;
+  }
+
+  .header-cta {
+    display: inline-flex;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    border: 0.5px solid #444444;
+    padding: 0.6rem 1.5rem;
+    transition: border-color 0.3s ease, color 0.3s ease;
+  }
+
+  .header-cta:hover {
+    border-color: var(--color-rojo);
+    color: var(--color-rojo);
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      padding: 0.8rem 1.25rem;
+    }
+
+    .header-logo img {
+      height: 34px;
+    }
+
+    .header-cta {
+      display: none;
+    }
+  }
+</style>

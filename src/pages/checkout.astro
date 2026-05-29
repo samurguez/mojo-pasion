@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { Image } from 'astro:assets';
-import StoreHeader from '../components/StoreHeader.astro';
+import Header from '../components/Header.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
 
@@ -40,7 +40,7 @@ const checkoutConfig = {
       <div class="co-bg-overlay"></div>
     </div>
 
-    <StoreHeader />
+    <Header />
 
     <main class="co-main">
       <div class="co-container">
