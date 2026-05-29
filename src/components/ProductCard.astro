@@ -50,6 +50,8 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
 <script>
   import { add } from '../lib/cart.ts';
 
+  let redirected = false;
+
   document.addEventListener('click', (e: Event) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.product-add-btn');
     if (!btn) return;
@@ -58,6 +60,9 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
     const productName = btn.dataset.name ?? '';
     if (!priceId || !priceInCentsStr || !priceDisplay) return;
     const priceInCents = Number(priceInCentsStr);
+
+    if (redirected) return;
+    redirected = true;
 
     add({ priceId, name: productName, priceInCents, priceDisplay });
 
@@ -90,6 +95,12 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
         });
       }
       doRedirect();
+    }
+  });
+
+  window.addEventListener('pageshow', (e: PageTransitionEvent) => {
+    if (e.persisted) {
+      redirected = false;
     }
   });
 </script>

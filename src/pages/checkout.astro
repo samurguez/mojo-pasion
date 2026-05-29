@@ -557,6 +557,13 @@ const checkoutConfig = {
               doCheckout();
             }
           });
+
+          window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+              btn.disabled = false;
+              btn.textContent = 'Pago seguro';
+            }
+          });
         }
       });
     </script>
