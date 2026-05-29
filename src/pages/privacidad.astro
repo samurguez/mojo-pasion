@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 ---
 
@@ -40,9 +41,7 @@ import CookieConsent from '../components/CookieConsent.astro';
       <h2>Transferencias internacionales</h2>
       <p>Algunos de los proveedores que utilizamos pueden tratar datos fuera del Espacio Económico Europeo. Google (Google Analytics) y Meta (Meta Pixel) pueden tratar datos en Estados Unidos bajo las garantías del Marco de Privacidad de Datos UE-EE.UU. El procesamiento de los pagos se realiza a través de Stripe, que puede tratar datos en Estados Unidos amparándose en cláusulas contractuales tipo y en el citado Marco.</p>
     </main>
-    <footer class="legal-footer">
-      <p>© 2026 Mojo Pasión. Todos los derechos reservados.</p>
-    </footer>
+    <Footer variant="minimal" />
     <CookieConsent />
   </body>
 </html>
@@ -98,12 +97,5 @@ import CookieConsent from '../components/CookieConsent.astro';
     font-size: 13px;
   }
 
-  .legal-footer {
-    text-align: center;
-    padding: 2rem;
-    border-top: 0.5px solid #222222;
-    font-size: 11px;
-    color: #444444;
-    font-family: var(--font-sans);
-  }
+
 </style>

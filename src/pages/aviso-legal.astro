@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 ---
 
@@ -31,9 +32,7 @@ import CookieConsent from '../components/CookieConsent.astro';
       <h2>Legislación aplicable</h2>
       <p>Este aviso legal se rige por la legislación española. Para cualquier controversia derivada del uso de este sitio web, las partes se someten a los juzgados y tribunales de Santa Cruz de Tenerife.</p>
     </main>
-    <footer class="legal-footer">
-      <p>© 2026 Mojo Pasión. Todos los derechos reservados.</p>
-    </footer>
+    <Footer variant="minimal" />
     <CookieConsent />
   </body>
 </html>
@@ -89,12 +88,5 @@ import CookieConsent from '../components/CookieConsent.astro';
     font-size: 13px;
   }
 
-  .legal-footer {
-    text-align: center;
-    padding: 2rem;
-    border-top: 0.5px solid #222222;
-    font-size: 11px;
-    color: #444444;
-    font-family: var(--font-sans);
-  }
+
 </style>
