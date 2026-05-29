@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Header from '../components/Header.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { PRODUCTS } from '../lib/tienda-config';
@@ -85,33 +86,8 @@ const jsonLd = {
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
   </head>
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        header.classList.add('visible');
-      } else {
-        header.classList.remove('visible');
-      }
-    });
-  });
-</script>
   <body>
-  <header class="header" id="header">
-      <img src="/images/logo-horizontal.png" alt="Mojo Pasión — logo mojo rojo palmero artesano canario" class="header-logo" width="200" height="50" />
-      <div class="header-actions">
-        <a href="/checkout" id="cart-toggle" class="header-cart-btn" aria-label="Ver carrito">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <path d="M16 10a4 4 0 01-8 0"/>
-          </svg>
-          <span id="cart-count" class="header-cart-count">0</span>
-        </a>
-        <a href="/tienda" class="header-cta">Comprar</a>
-      </div>
-    </header>
+  <Header showCta transparentOnTop />
     <!-- HERO -->
       <section class="hero">
         <img src="/images/hero.avif" alt="Tarro de mojo rojo palmero artesano sobre madera — Mojo Pasión canario" class="hero-img" />
@@ -235,23 +211,6 @@ const jsonLd = {
       </section>
 
     </main>
-	<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const header = document.getElementById('header');
-    let lastScroll = 0;
-
-    window.addEventListener('scroll', () => {
-      const currentScroll = window.scrollY;
-      if (currentScroll < lastScroll && currentScroll > 50) {
-        header.classList.add('visible');
-      } else {
-        header.classList.remove('visible');
-      }
-      lastScroll = currentScroll;
-    });
-  });
-</script>
-
 <!-- FOOTER -->
       <footer class="footer">
         <div class="footer-row">
@@ -270,20 +229,6 @@ const jsonLd = {
       import '../lib/cart.ts';
     </script>
     <CookieConsent />
-    <script is:inline>
-      // Badge del carrito
-      (function () {
-        function updateBadge() {
-          var badge = document.getElementById('cart-count');
-          if (!badge) return;
-          var n = window.Cart.count();
-          badge.textContent = String(n);
-          badge.style.display = n > 0 ? 'flex' : 'none';
-        }
-        document.addEventListener('DOMContentLoaded', updateBadge);
-        window.addEventListener('cart:update', updateBadge);
-      })();
-    </script>
   </body>
 </html>
 <style>
@@ -479,50 +424,6 @@ const jsonLd = {
     margin-bottom: 2rem;
   }
 
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 3rem;
-    background: #111111;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-  }
-
-  .header.visible {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .header-logo {
-    height: 50px;
-    width: auto;
-  }
-
-  .header-cta {
-    font-family: var(--font-sans);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #ffffff;
-    text-decoration: none;
-    border: 0.5px solid #444444;
-    padding: 0.6rem 1.5rem;
-    transition: border-color 0.3s ease;
-  }
-
-  .header-cta:hover {
-    border-color: var(--color-rojo);
-    color: var(--color-rojo);
-  }
-
   .footer {
     background: #0a0a0a;
     padding: 1.5rem 3rem;
@@ -668,10 +569,6 @@ const jsonLd = {
       margin-top: 1rem;
     }
 
-    .header {
-      padding: 0.6rem 1.5rem;
-    }
-
     .footer-row {
       flex-direction: column;
       gap: 1.5rem;
@@ -686,66 +583,11 @@ const jsonLd = {
 
   }
 
-  /* Carrito en el header de la landing */
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .header-cart-btn {
-    position: relative;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-crema);
-    padding: 0.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-  }
-
-  .header-cart-btn:hover {
-    color: var(--color-rojo);
-  }
-
-  .header-cart-count {
-    position: absolute;
-    top: -2px;
-    right: -4px;
-    background: var(--color-rojo);
-    color: #fff;
-    font-family: var(--font-sans);
-    font-size: 10px;
-    font-weight: 600;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 9px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
-    line-height: 1;
-  }
 
 </style>
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', () => {
-    const header = document.getElementById('header');
-    let lastScroll = 0;
-
-    window.addEventListener('scroll', () => {
-      const currentScroll = window.scrollY;
-      if (currentScroll < lastScroll && currentScroll > 50) {
-        header.classList.add('visible');
-      } else {
-        header.classList.remove('visible');
-      }
-      lastScroll = currentScroll;
-    });
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

@@ -2,11 +2,12 @@
 interface Props {
   showCart?: boolean;
   showCta?: boolean;
+  transparentOnTop?: boolean;
 }
-const { showCart = true, showCta = false } = Astro.props;
+const { showCart = true, showCta = false, transparentOnTop = false } = Astro.props;
 ---
 
-<header class="header">
+<header class:list={['header', { 'is-transparent-on-top': transparentOnTop }]}>
   <a href="/" class="header-logo" aria-label="Volver a inicio">
     <img
       src="/images/logo-horizontal.png"
@@ -53,6 +54,22 @@ const { showCart = true, showCta = false } = Astro.props;
 
   document.addEventListener('DOMContentLoaded', updateBadge);
   window.addEventListener('cart:update', updateBadge);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.querySelector('.header.is-transparent-on-top') as HTMLElement | null;
+    if (!header) return;
+
+    const updateScrolled = () => {
+      if (window.scrollY > 50) {
+        header.classList.add('is-scrolled');
+      } else {
+        header.classList.remove('is-scrolled');
+      }
+    };
+
+    updateScrolled();
+    window.addEventListener('scroll', updateScrolled, { passive: true });
+  });
 </script>
 
 <style>
@@ -69,6 +86,17 @@ const { showCart = true, showCta = false } = Astro.props;
     background: var(--color-negro);
     border-bottom: 0.5px solid #222;
     backdrop-filter: blur(8px);
+    transition: background 0.3s ease, border-bottom-color 0.3s ease;
+  }
+
+  .header.is-transparent-on-top {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .header.is-transparent-on-top.is-scrolled {
+    background: var(--color-negro);
+    border-bottom-color: #222;
   }
 
   .header-logo img {
