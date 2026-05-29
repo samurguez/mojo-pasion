@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { Image } from 'astro:assets';
 import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
 
@@ -1071,6 +1072,7 @@ const checkoutConfig = {
       }
     </style>
 
+    <Footer variant="minimal" />
     <CookieConsent />
 
     <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->

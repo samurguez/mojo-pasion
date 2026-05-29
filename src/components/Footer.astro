@@ -1,0 +1,184 @@
+---
+interface Props {
+  variant?: 'full' | 'minimal';
+}
+const { variant = 'full' } = Astro.props;
+
+const footerLinks = [
+  { href: '/aviso-legal', label: 'Aviso legal' },
+  { href: '/privacidad', label: 'Privacidad' },
+  { href: 'https://instagram.com/mojo_pasion', label: 'Instagram', external: true, social: true },
+  { href: 'https://tiktok.com/@mojopasion', label: 'TikTok', external: true, social: true },
+];
+
+const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Canarias con pimienta palmera, sal marina de la isla y respetando la receta familiar.';
+---
+
+{variant === 'full' ? (
+  <footer class="footer footer-full">
+    <div class="footer-main">
+      <a href="/" class="footer-logo" aria-label="Mojo Pasión - Inicio">
+        <img src="/images/logo-horizontal.png" alt="Mojo Pasión" width="160" height="32" />
+      </a>
+      <ul class="footer-links">
+        {footerLinks.map(({ href, label, external, social }) => (
+          <li>
+            <a
+              href={href}
+              class:list={['footer-link', social && 'is-social']}
+              {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+            >{label}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
+      <p class="footer-seo">{SEO_TAGLINE}</p>
+    </div>
+  </footer>
+) : (
+  <footer class="footer footer-minimal">
+    <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
+    <ul class="footer-links">
+      {footerLinks.map(({ href, label, external, social }) => (
+        <li>
+          <a
+            href={href}
+            class:list={['footer-link', social && 'is-social']}
+            {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+          >{label}</a>
+        </li>
+      ))}
+    </ul>
+  </footer>
+)}
+
+<style>
+  .footer {
+    background: #0a0a0a;
+    border-top: 0.5px solid #222;
+    color: #aaa;
+    font-family: var(--font-sans);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === FULL === */
+  .footer-full {
+    padding: 2rem 3rem 1.5rem;
+  }
+
+  .footer-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-logo img {
+    height: 28px;
+    width: auto;
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+    display: block;
+  }
+
+  .footer-logo:hover img {
+    opacity: 1;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--color-crema);
+  }
+
+  .footer-link.is-social:hover {
+    color: var(--color-rojo);
+  }
+
+  .footer-bottom {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid #1a1a1a;
+    text-align: center;
+  }
+
+  .footer-copy,
+  .footer-seo {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 300;
+    color: #888;
+    line-height: 1.5;
+  }
+
+  .footer-seo {
+    max-width: 60ch;
+    margin: 0.4rem auto 0;
+  }
+
+  /* === MINIMAL === */
+  .footer-minimal {
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-minimal .footer-copy {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+  }
+
+  /* === Responsive === */
+  @media (max-width: 768px) {
+    .footer-full {
+      padding: 1.5rem;
+    }
+
+    .footer-main {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.25rem;
+    }
+
+    .footer-links {
+      justify-content: center;
+    }
+
+    .footer-minimal {
+      flex-direction: column;
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .footer-minimal .footer-links {
+      justify-content: center;
+    }
+  }
+</style>
