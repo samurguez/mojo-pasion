@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Header from '../components/Header.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 ---
 
@@ -10,11 +11,7 @@ import CookieConsent from '../components/CookieConsent.astro';
     <title>Política de Privacidad — Mojo Pasión</title>
   </head>
   <body>
-    <header class="legal-header">
-      <a href="/">
-        <img src="/images/logo-horizontal.png" alt="Mojo Pasión" class="legal-logo" />
-      </a>
-    </header>
+    <Header showCart={false} />
     <main class="legal-content">
       <h1>Política de Privacidad</h1>
 
@@ -55,16 +52,6 @@ import CookieConsent from '../components/CookieConsent.astro';
     background: var(--color-negro);
     color: var(--color-crema);
     font-family: var(--font-sans);
-  }
-
-  .legal-header {
-    padding: 1.5rem 3rem;
-    border-bottom: 0.5px solid #222222;
-  }
-
-  .legal-logo {
-    height: 36px;
-    width: auto;
   }
 
   .legal-content {
