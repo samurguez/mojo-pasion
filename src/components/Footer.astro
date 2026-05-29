@@ -4,21 +4,11 @@ interface Props {
 }
 const { variant = 'full' } = Astro.props;
 
-const navLinks = [
-  { href: '/#productos', label: 'Productos' },
-  { href: '/#ingredientes', label: 'Ingredientes' },
-  { href: '/tienda', label: 'Tienda' },
-  { href: '/#horeca', label: 'Horeca' },
-];
-
-const legalLinks = [
+const footerLinks = [
   { href: '/aviso-legal', label: 'Aviso legal' },
   { href: '/privacidad', label: 'Privacidad' },
-];
-
-const socialLinks = [
-  { href: 'https://instagram.com/mojo_pasion', label: 'Instagram' },
-  { href: 'https://tiktok.com/@mojopasion', label: 'TikTok' },
+  { href: 'https://instagram.com/mojo_pasion', label: 'Instagram', external: true, social: true },
+  { href: 'https://tiktok.com/@mojopasion', label: 'TikTok', external: true, social: true },
 ];
 
 const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Canarias con pimienta palmera, sal marina de la isla y respetando la receta familiar.';
@@ -30,32 +20,17 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
       <a href="/" class="footer-logo" aria-label="Mojo Pasión - Inicio">
         <img src="/images/logo-horizontal.png" alt="Mojo Pasión" width="160" height="32" />
       </a>
-      <div class="footer-groups">
-        <nav class="footer-group" aria-label="Navegación">
-          <h3 class="footer-group-title">Navegación</h3>
-          <ul class="footer-list">
-            {navLinks.map(({ href, label }) => (
-              <li><a href={href} class="footer-link">{label}</a></li>
-            ))}
-          </ul>
-        </nav>
-        <nav class="footer-group" aria-label="Legal">
-          <h3 class="footer-group-title">Legal</h3>
-          <ul class="footer-list">
-            {legalLinks.map(({ href, label }) => (
-              <li><a href={href} class="footer-link">{label}</a></li>
-            ))}
-          </ul>
-        </nav>
-        <nav class="footer-group" aria-label="Síguenos">
-          <h3 class="footer-group-title">Síguenos</h3>
-          <ul class="footer-list">
-            {socialLinks.map(({ href, label }) => (
-              <li><a href={href} target="_blank" rel="noopener noreferrer" class="footer-social-link">{label}</a></li>
-            ))}
-          </ul>
-        </nav>
-      </div>
+      <ul class="footer-links">
+        {footerLinks.map(({ href, label, external, social }) => (
+          <li>
+            <a
+              href={href}
+              class:list={['footer-link', social && 'is-social']}
+              {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+            >{label}</a>
+          </li>
+        ))}
+      </ul>
     </div>
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
@@ -65,14 +40,17 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
 ) : (
   <footer class="footer footer-minimal">
     <p class="footer-copy">© 2026 Mojo Pasión. Todos los derechos reservados.</p>
-    <div class="footer-minimal-links">
-      {legalLinks.map(({ href, label }) => (
-        <a href={href} class="footer-link">{label}</a>
+    <ul class="footer-links">
+      {footerLinks.map(({ href, label, external, social }) => (
+        <li>
+          <a
+            href={href}
+            class:list={['footer-link', social && 'is-social']}
+            {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+          >{label}</a>
+        </li>
       ))}
-      {socialLinks.map(({ href, label }) => (
-        <a href={href} target="_blank" rel="noopener noreferrer" class="footer-social-link">{label}</a>
-      ))}
-    </div>
+    </ul>
   </footer>
 )}
 
@@ -84,21 +62,21 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
     font-family: var(--font-sans);
   }
 
-  /* === Variante FULL === */
+  /* === FULL === */
   .footer-full {
-    padding: 3rem 3rem 1.5rem;
+    padding: 2rem 3rem 1.5rem;
   }
 
   .footer-main {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 3rem;
+    gap: 2rem;
     flex-wrap: wrap;
   }
 
   .footer-logo img {
-    height: 32px;
+    height: 28px;
     width: auto;
     opacity: 0.85;
     transition: opacity 0.2s ease;
@@ -109,32 +87,17 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
     opacity: 1;
   }
 
-  .footer-groups {
-    display: flex;
-    gap: 4rem;
-    flex-wrap: wrap;
-  }
-
-  .footer-group-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #aaa;
-    margin: 0 0 1rem 0;
-  }
-
-  .footer-list {
+  .footer-links {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
 
-  .footer-link,
-  .footer-social-link {
+  .footer-link {
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.5px;
@@ -147,18 +110,14 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
     color: var(--color-crema);
   }
 
-  .footer-social-link:hover {
+  .footer-link.is-social:hover {
     color: var(--color-rojo);
   }
 
   .footer-bottom {
-    margin-top: 3rem;
-    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
     border-top: 0.5px solid #1a1a1a;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
     text-align: center;
   }
 
@@ -173,9 +132,10 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
 
   .footer-seo {
     max-width: 60ch;
+    margin: 0.4rem auto 0;
   }
 
-  /* === Variante MINIMAL === */
+  /* === MINIMAL === */
   .footer-minimal {
     padding: 1.25rem 2rem;
     display: flex;
@@ -191,48 +151,31 @@ const SEO_TAGLINE = 'Mojo Pasión — Mojo rojo palmero artesano elaborado en Ca
     margin: 0;
   }
 
-  .footer-minimal-links {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .footer-minimal .footer-link,
-  .footer-minimal .footer-social-link {
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
   /* === Responsive === */
   @media (max-width: 768px) {
     .footer-full {
-      padding: 2.5rem 1.5rem 1.5rem;
+      padding: 1.5rem;
     }
 
     .footer-main {
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 2rem;
+      gap: 1.25rem;
     }
 
-    .footer-groups {
-      gap: 2.5rem;
+    .footer-links {
       justify-content: center;
-    }
-
-    .footer-list {
-      align-items: center;
     }
 
     .footer-minimal {
       flex-direction: column;
       padding: 1.25rem 1.5rem;
       text-align: center;
+      gap: 0.75rem;
     }
 
-    .footer-minimal-links {
+    .footer-minimal .footer-links {
       justify-content: center;
     }
   }
