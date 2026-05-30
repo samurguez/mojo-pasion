@@ -106,6 +106,7 @@ const checkoutConfig = {
               <div class="co-method-info">
                 <span class="co-method-name">Envío a domicilio</span>
                 <span class="co-method-sub">3–7 días · Canarias</span>
+                <span class="co-method-sub co-method-hint">Introduces la dirección en el siguiente paso</span>
               </div>
               <span class="co-method-cost" id="shipping-cost-display">—</span>
             </label>
@@ -688,6 +689,17 @@ const checkoutConfig = {
         font-family: var(--font-sans);
         line-height: 1;
         padding: 0;
+        position: relative;
+      }
+
+      .co-qty-btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 44px;
+        min-height: 44px;
       }
 
       .co-qty-btn:hover {
@@ -799,6 +811,10 @@ const checkoutConfig = {
         font-weight: 300;
         color: #777;
         letter-spacing: 0.3px;
+      }
+
+      .co-method-hint {
+        color: #555;
       }
 
       .co-method-cost {
