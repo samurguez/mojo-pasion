@@ -182,7 +182,7 @@ const checkoutConfig = {
             <span class="co-consent-text">Avísame si hay promociones y/o novedades en Mojo Pasión</span>
           </label>
 
-          <button id="submit-btn" class="submit-btn" type="button" disabled>
+          <button id="submit-btn" class="submit-btn" type="button">
             <span class="submit-btn-inner">
               Pago seguro
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -271,7 +271,6 @@ const checkoutConfig = {
         recalcShipping();
         updateIncentivo();
         updateTotal();
-        validateBtn();
       }
 
       // ── Coste de envío ───────────────────────────────────────────────────────
@@ -368,23 +367,6 @@ const checkoutConfig = {
         }
       }
 
-      // ── Valida botón de pago ─────────────────────────────────────────────────
-      function validateBtn() {
-        var btn = document.getElementById('submit-btn');
-        if (!btn) return;
-        var valid = false;
-
-        if (totalItems() > 0) {
-          if (selectedMethod === 'shipping' && currentZone) {
-            valid = true;
-          } else if (selectedMethod === 'pickup') {
-            var point = document.getElementById('pickup-point').value;
-            valid = point !== '';
-          }
-        }
-        btn.disabled = !valid;
-      }
-
       // ── Validación del código postal ─────────────────────────────────────────
       function validateCP(cp) {
         var msgEl  = document.getElementById('zone-message');
@@ -408,7 +390,35 @@ const checkoutConfig = {
         recalcShipping();
         updateIncentivo();
         updateTotal();
-        validateBtn();
+      }
+
+      // ── Helpers de validación ────────────────────────────────────────────────
+      function shakeEl(el) {
+        el.classList.remove('field-shake');
+        void el.offsetWidth; // reflow para reiniciar la animación
+        el.classList.add('field-shake');
+        el.addEventListener('animationend', function () { el.classList.remove('field-shake'); }, { once: true });
+      }
+
+      function showFieldError(el, msg) {
+        el.classList.add('field-error');
+        var errId = 'err-' + el.id;
+        var existing = document.getElementById(errId);
+        if (!existing) {
+          var errEl = document.createElement('p');
+          errEl.id = errId;
+          errEl.className = 'field-error-msg';
+          errEl.textContent = msg;
+          el.insertAdjacentElement('afterend', errEl);
+        }
+        shakeEl(el);
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      function clearFieldError(el) {
+        el.classList.remove('field-error');
+        var errEl = document.getElementById('err-' + el.id);
+        if (errEl) errEl.remove();
       }
 
       // ── Inicialización ───────────────────────────────────────────────────────
@@ -447,7 +457,6 @@ const checkoutConfig = {
             recalcShipping();
             updateIncentivo();
             updateTotal();
-            validateBtn();
           });
         });
 
@@ -456,6 +465,7 @@ const checkoutConfig = {
         if (cpInput) {
           cpInput.addEventListener('input', function () {
             this.value = this.value.replace(/\D/g, '');
+            clearFieldError(this);
             if (this.value.length === 5) {
               validateCP(this.value);
             } else {
@@ -465,14 +475,16 @@ const checkoutConfig = {
               recalcShipping();
               updateIncentivo();
               updateTotal();
-              validateBtn();
             }
           });
         }
 
-        // Recogida: validar al cambiar punto
+        // Recogida: limpiar error al cambiar punto
         var pickupEl = document.getElementById('pickup-point');
-        if (pickupEl) { pickupEl.addEventListener('change', validateBtn); pickupEl.addEventListener('input', validateBtn); }
+        if (pickupEl) {
+          pickupEl.addEventListener('change', function () { clearFieldError(this); });
+          pickupEl.addEventListener('input', function () { clearFieldError(this); });
+        }
 
         // Botón de pago
         var btn = document.getElementById('submit-btn');
@@ -484,6 +496,24 @@ const checkoutConfig = {
               .map(function (p) { return { priceId: p.priceId, quantity: qtys[p.priceId] }; });
 
             if (!items.length) return;
+
+            // ── Validación en el momento del clic ──────────────────────────────
+            if (selectedMethod === 'shipping') {
+              var cpEl = document.getElementById('postal-code');
+              if (!currentZone) {
+                showFieldError(cpEl, cpEl.value.length === 5
+                  ? 'Este código postal no tiene envío disponible'
+                  : 'Introduce tu código postal para calcular el envío');
+                return;
+              }
+            } else if (selectedMethod === 'pickup') {
+              var pkEl = document.getElementById('pickup-point');
+              if (!pkEl.value) {
+                showFieldError(pkEl, 'Selecciona un punto de recogida');
+                return;
+              }
+            }
+            // ──────────────────────────────────────────────────────────────────
 
             // Guarda método para /gracias
             sessionStorage.setItem('mojo-delivery-method', selectedMethod);
@@ -982,8 +1012,29 @@ const checkoutConfig = {
         text-align: center;
       }
 
-      .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-      .submit-btn:not(:disabled):hover { opacity: 0.85; }
+      .submit-btn:hover { opacity: 0.85; }
+
+      @keyframes co-field-shake {
+        0%   { transform: translateX(0); }
+        20%  { transform: translateX(-6px); }
+        40%  { transform: translateX(6px); }
+        60%  { transform: translateX(-4px); }
+        80%  { transform: translateX(4px); }
+        100% { transform: translateX(0); }
+      }
+
+      .field-shake { animation: co-field-shake 0.3s ease; }
+
+      .field-error { border-color: #E8002D !important; }
+
+      .field-error-msg {
+        margin: 0.3rem 0 0;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 300;
+        color: #e06060;
+        line-height: 1.4;
+      }
 
       .submit-btn-inner {
         display: inline-flex;
