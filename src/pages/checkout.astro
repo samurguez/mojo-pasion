@@ -268,6 +268,11 @@ const checkoutConfig = {
         var emptyMsg = document.getElementById('co-empty-msg');
         if (emptyMsg) emptyMsg.style.display = totalItems() === 0 ? 'block' : 'none';
 
+        if (totalItems() > 0) {
+          var productsEl2 = document.getElementById('co-products');
+          if (productsEl2) productsEl2.classList.remove('cart-empty-highlight');
+        }
+
         recalcShipping();
         updateIncentivo();
         updateTotal();
@@ -402,12 +407,14 @@ const checkoutConfig = {
 
       function showFieldError(el, msg) {
         el.classList.add('field-error');
+        el.setAttribute('aria-invalid', 'true');
         var errId = 'err-' + el.id;
         var existing = document.getElementById(errId);
         if (!existing) {
           var errEl = document.createElement('p');
           errEl.id = errId;
           errEl.className = 'field-error-msg';
+          errEl.setAttribute('aria-live', 'polite');
           errEl.textContent = msg;
           el.insertAdjacentElement('afterend', errEl);
         }
@@ -417,6 +424,7 @@ const checkoutConfig = {
 
       function clearFieldError(el) {
         el.classList.remove('field-error');
+        el.setAttribute('aria-invalid', 'false');
         var errEl = document.getElementById('err-' + el.id);
         if (errEl) errEl.remove();
       }
@@ -495,7 +503,15 @@ const checkoutConfig = {
               .filter(function (p) { return (qtys[p.priceId] || 0) > 0; })
               .map(function (p) { return { priceId: p.priceId, quantity: qtys[p.priceId] }; });
 
-            if (!items.length) return;
+            if (!items.length) {
+              var productsEl = document.getElementById('co-products');
+              if (productsEl) {
+                productsEl.classList.add('cart-empty-highlight');
+                shakeEl(productsEl);
+                productsEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+              return;
+            }
 
             // ── Validación en el momento del clic ──────────────────────────────
             if (selectedMethod === 'shipping') {
@@ -1026,6 +1042,11 @@ const checkoutConfig = {
       .field-shake { animation: co-field-shake 0.3s ease; }
 
       .field-error { border-color: #E8002D !important; }
+
+      .cart-empty-highlight {
+        outline: 1px solid rgba(232, 0, 45, 0.4);
+        border-radius: 4px;
+      }
 
       .field-error-msg {
         margin: 0.3rem 0 0;
