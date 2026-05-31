@@ -49,6 +49,47 @@ const jsonLd = {
             priceCurrency: 'EUR',
             availability: 'https://schema.org/InStock',
             url: `${BASE}/tienda`,
+            shippingDetails: [
+              {
+                '@type': 'OfferShippingDetails',
+                shippingRate: { '@type': 'MonetaryAmount', value: '5.00', currency: 'EUR' },
+                shippingDestination: {
+                  '@type': 'DefinedRegion',
+                  addressCountry: 'ES',
+                  addressRegion: 'Santa Cruz de Tenerife',
+                  postalCodePrefix: ['38'],
+                },
+                deliveryTime: {
+                  '@type': 'ShippingDeliveryTime',
+                  handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 2, unitCode: 'DAY' },
+                  transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+                },
+              },
+              {
+                '@type': 'OfferShippingDetails',
+                shippingRate: { '@type': 'MonetaryAmount', value: '8.50', currency: 'EUR' },
+                shippingDestination: {
+                  '@type': 'DefinedRegion',
+                  addressCountry: 'ES',
+                  addressRegion: 'Las Palmas',
+                  postalCodePrefix: ['35'],
+                },
+                deliveryTime: {
+                  '@type': 'ShippingDeliveryTime',
+                  handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 2, unitCode: 'DAY' },
+                  transitTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 5, unitCode: 'DAY' },
+                },
+              },
+            ],
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: 'ES',
+              returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+              merchantReturnDays: 14,
+              returnMethod: 'https://schema.org/ReturnByMail',
+              returnFees: 'https://schema.org/ReturnShippingFees',
+              merchantReturnLink: `${BASE}/devoluciones`,
+            },
           },
         },
       })),
