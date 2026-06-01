@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { PRODUCTS } from '../lib/tienda-config';
+import { BUSINESS } from '../data/business';
 import { getImage } from 'astro:assets';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
@@ -52,40 +53,40 @@ const jsonLd = {
             shippingDetails: [
               {
                 '@type': 'OfferShippingDetails',
-                shippingRate: { '@type': 'MonetaryAmount', value: '5.00', currency: 'EUR' },
+                shippingRate: { '@type': 'MonetaryAmount', value: (BUSINESS.shipping.zones.tenerife.costCents / 100).toFixed(2), currency: 'EUR' },
                 shippingDestination: {
                   '@type': 'DefinedRegion',
-                  addressCountry: 'ES',
-                  addressRegion: 'Santa Cruz de Tenerife',
-                  postalCodePrefix: ['38'],
+                  addressCountry: BUSINESS.address.countryCode,
+                  addressRegion: BUSINESS.address.province,
+                  postalCodePrefix: BUSINESS.shipping.zones.tenerife.postalCodePrefix,
                 },
                 deliveryTime: {
                   '@type': 'ShippingDeliveryTime',
                   handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 2, unitCode: 'DAY' },
-                  transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+                  transitTime: { '@type': 'QuantitativeValue', minValue: BUSINESS.shipping.zones.tenerife.deliveryDaysMin, maxValue: BUSINESS.shipping.zones.tenerife.deliveryDaysMax, unitCode: 'DAY' },
                 },
               },
               {
                 '@type': 'OfferShippingDetails',
-                shippingRate: { '@type': 'MonetaryAmount', value: '8.50', currency: 'EUR' },
+                shippingRate: { '@type': 'MonetaryAmount', value: (BUSINESS.shipping.zones.canarias.costCents / 100).toFixed(2), currency: 'EUR' },
                 shippingDestination: {
                   '@type': 'DefinedRegion',
-                  addressCountry: 'ES',
+                  addressCountry: BUSINESS.address.countryCode,
                   addressRegion: 'Las Palmas',
-                  postalCodePrefix: ['35'],
+                  postalCodePrefix: BUSINESS.shipping.zones.canarias.postalCodePrefix,
                 },
                 deliveryTime: {
                   '@type': 'ShippingDeliveryTime',
                   handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 2, unitCode: 'DAY' },
-                  transitTime: { '@type': 'QuantitativeValue', minValue: 2, maxValue: 5, unitCode: 'DAY' },
+                  transitTime: { '@type': 'QuantitativeValue', minValue: BUSINESS.shipping.zones.canarias.deliveryDaysMin, maxValue: BUSINESS.shipping.zones.canarias.deliveryDaysMax, unitCode: 'DAY' },
                 },
               },
             ],
             hasMerchantReturnPolicy: {
               '@type': 'MerchantReturnPolicy',
-              applicableCountry: 'ES',
+              applicableCountry: BUSINESS.address.countryCode,
               returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-              merchantReturnDays: 14,
+              merchantReturnDays: BUSINESS.returns.days,
               returnMethod: 'https://schema.org/ReturnByMail',
               returnFees: 'https://schema.org/ReturnShippingFees',
               merchantReturnLink: `${BASE}/devoluciones`,

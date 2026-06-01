@@ -3,6 +3,9 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
+import { BUSINESS } from '../data/business';
+
+const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
 ---
 
 <html lang="es">
@@ -17,8 +20,8 @@ import CookieConsent from '../components/CookieConsent.astro';
       <h1>Aviso Legal</h1>
 
       <h2>Titular del sitio web</h2>
-      <p>En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico, se informa que el titular de este sitio web es <strong> Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en Calle Manuel Bello Ramos, 74, 38670 Adeje, Santa Cruz de Tenerife, que opera bajo la marca Mojo Pasión.</p>
-      <p>Email de contacto: <a href="mailto:hola@mojopasion.com">hola@mojopasion.com</a></p>
+      <p>En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico, se informa que el titular de este sitio web es <strong> Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en {address}, que opera bajo la marca Mojo Pasión.</p>
+      <p>Email de contacto: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
 
       <h2>Objeto y ámbito de aplicación</h2>
       <p>Este sitio web tiene como objeto informar sobre los productos de Mojo Pasión y permitir su compra a través de la tienda online. La realización de un pedido a través de este sitio implica la aceptación de las condiciones de compra vigentes en el momento de la contratación.</p>
