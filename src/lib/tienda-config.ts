@@ -5,6 +5,7 @@
 import type { ImageMetadata } from 'astro';
 import imgMojoSuave from '../assets/productos/mojo-suave.jpg';
 import imgMojoPicante from '../assets/productos/mojo-picante.jpg';
+import { BUSINESS } from '../data/business';
 
 export interface ProductConfig {
   id: string;
@@ -51,16 +52,16 @@ export const PRODUCTS: ProductConfig[] = [
 // Zonas de envío — solo Canarias en V1
 export const SHIPPING_ZONES = {
   tenerife: {
-    label: 'Tenerife',
-    postalPrefix: '38',
-    costInCents: 500,       // 5,00 €
-    freeFromInCents: 2500,  // Gratis a partir de 25,00 €
+    label: BUSINESS.shipping.zones.tenerife.name,
+    postalPrefix: BUSINESS.shipping.zones.tenerife.postalCodePrefix[0],
+    costInCents: BUSINESS.shipping.zones.tenerife.costCents,
+    freeFromInCents: BUSINESS.shipping.zones.tenerife.freeFromCents,
   },
   canarias: {
-    label: 'Resto de Canarias',
-    postalPrefix: '35',
-    costInCents: 850,       // 8,50 €
-    freeFromInCents: 3800,  // Gratis a partir de 38,00 €
+    label: BUSINESS.shipping.zones.canarias.name,
+    postalPrefix: BUSINESS.shipping.zones.canarias.postalCodePrefix[0],
+    costInCents: BUSINESS.shipping.zones.canarias.costCents,
+    freeFromInCents: BUSINESS.shipping.zones.canarias.freeFromCents,
   },
 };
 
