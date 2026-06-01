@@ -81,16 +81,17 @@ Tienda online de mojo rojo palmero artesanal. Receta familiar de La Palma. Lanza
 
 ## Datos legales y comerciales
 
-- **Dirección**: Calle Manuel Bello Ramos, 74, 38670 Adeje, Santa Cruz de Tenerife
-- **Email**: hola@mojopasion.com
-- **Envío**: solo Canarias (NO península)
-  - Tenerife: 5€
-  - Resto Canarias: 8,50€
-- **Devoluciones**: 14 días desde recepción, cliente paga envío de vuelta, solo tarros sellados al vacío
+TODOS los datos comerciales (dirección, email, envío, devoluciones, plazos) están centralizados en `src/data/business.ts`. Single source of truth.
+
+**NUNCA hardcodear estos valores en páginas, componentes o schema.** Siempre importar desde el archivo central.
+
+Cambios futuros (cambio de obrador, ajustes de envío, política nueva) se hacen exclusivamente en `src/data/business.ts`.
+
 - **Páginas legales**: `/privacidad`, `/aviso-legal`, `/devoluciones`
 
 ## Anti-patrones (NO hacer)
 
+- ⛔ Hardcodear datos comerciales (dirección, precios, plazos) en páginas o componentes — siempre importar de `src/data/business.ts`
 - ⛔ Monolitos: si un archivo `.astro` supera 500 líneas, **PARAR y proponer split** antes de seguir
 - ⛔ Inventar datos para Schema (reseñas, valoraciones falsas → penalización Google)
 - ⛔ Disabled en CTA por validación incompleta (mala UX según NN/g y Adam Silver)

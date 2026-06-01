@@ -5,10 +5,13 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
+import { BUSINESS } from '../data/business';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const bz = BUSINESS.shipping.zones;
 
 const checkoutConfig = {
   products: PRODUCTS.map(p => ({
@@ -17,7 +20,20 @@ const checkoutConfig = {
     priceInCents: p.priceInCents,
     priceDisplay: p.priceDisplay,
   })),
-  shippingZones: SHIPPING_ZONES,
+  shippingZones: {
+    tenerife: {
+      label: bz.tenerife.name,
+      postalPrefix: bz.tenerife.postalCodePrefix[0],
+      costInCents: bz.tenerife.costCents,
+      freeFromInCents: SHIPPING_ZONES.tenerife.freeFromInCents,
+    },
+    canarias: {
+      label: bz.canarias.name,
+      postalPrefix: bz.canarias.postalCodePrefix[0],
+      costInCents: bz.canarias.costCents,
+      freeFromInCents: SHIPPING_ZONES.canarias.freeFromInCents,
+    },
+  },
   pickupPoints: PICKUP_POINTS,
 };
 ---

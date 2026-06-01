@@ -3,10 +3,14 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
+import { BUSINESS } from '../data/business';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
 import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
 import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+
+const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
+const { days, incidentReportHours } = BUSINESS.returns;
 ---
 
 <html lang="es">
@@ -19,7 +23,7 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
     <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
     <meta name="robots" content="noindex" />
     <title>Política de devoluciones | Mojo Pasión</title>
-    <meta name="description" content="Política de devoluciones de Mojo Pasión. 14 días desde recepción para tarros sellados al vacío." />
+    <meta name="description" content={`Política de devoluciones de Mojo Pasión. ${days} días desde recepción para tarros sellados al vacío.`} />
   </head>
   <body>
     <Header showCart={false} />
@@ -28,7 +32,7 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
 
       <p><em>Última actualización: 30 de mayo de 2026</em></p>
 
-      <p>En Mojo Pasión nos comprometemos a entregar el producto en perfectas condiciones. Si por algún motivo no estás conforme con tu compra, puedes ejercer tu derecho de desistimiento dentro de los 14 días naturales posteriores a la recepción del pedido, conforme al Real Decreto Legislativo 1/2007 de Defensa de los Consumidores y Usuarios.</p>
+      <p>En Mojo Pasión nos comprometemos a entregar el producto en perfectas condiciones. Si por algún motivo no estás conforme con tu compra, puedes ejercer tu derecho de desistimiento dentro de los {days} días naturales posteriores a la recepción del pedido, conforme al Real Decreto Legislativo 1/2007 de Defensa de los Consumidores y Usuarios.</p>
 
       <h2>Condiciones para la devolución</h2>
 
@@ -39,21 +43,21 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
       <h2>Cómo solicitar una devolución</h2>
 
       <ol>
-        <li>Envíanos un email a <a href="mailto:hola@mojopasion.com">hola@mojopasion.com</a> en un plazo máximo de 14 días desde la recepción del pedido, indicando: tu número de pedido, motivo de la devolución, foto del producto en su estado actual (precintado al vacío).</li>
+        <li>Envíanos un email a <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> en un plazo máximo de {days} días desde la recepción del pedido, indicando: tu número de pedido, motivo de la devolución, foto del producto en su estado actual (precintado al vacío).</li>
         <li>Te confirmaremos la dirección de envío de retorno.</li>
         <li>Embala el producto cuidadosamente para asegurar su llegada en perfectas condiciones.</li>
         <li>Envíalo por correo a la dirección facilitada. Los gastos de envío de la devolución corren por cuenta del cliente.</li>
-        <li>Una vez recibido y verificado el producto, te reembolsaremos el importe en un plazo máximo de 14 días por el mismo método de pago utilizado en la compra.</li>
+        <li>Una vez recibido y verificado el producto, te reembolsaremos el importe en un plazo máximo de {days} días por el mismo método de pago utilizado en la compra.</li>
       </ol>
 
       <h2>Productos dañados o defectuosos</h2>
 
-      <p>Si recibes un producto dañado durante el transporte o con un defecto de fabricación, contacta con nosotros en <a href="mailto:hola@mojopasion.com">hola@mojopasion.com</a> en las 48 horas siguientes a la recepción, adjuntando fotografías del producto y del embalaje. En estos casos, asumimos los gastos de envío del cambio o reembolso.</p>
+      <p>Si recibes un producto dañado durante el transporte o con un defecto de fabricación, contacta con nosotros en <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> en las {incidentReportHours} horas siguientes a la recepción, adjuntando fotografías del producto y del embalaje. En estos casos, asumimos los gastos de envío del cambio o reembolso.</p>
 
       <h2>Contacto</h2>
 
-      <p>Email: <a href="mailto:hola@mojopasion.com">hola@mojopasion.com</a><br />
-      Dirección: Calle Manuel Bello Ramos, 74, 38670 Adeje, Santa Cruz de Tenerife</p>
+      <p>Email: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a><br />
+      Dirección: {address}</p>
     </main>
     <Footer variant="minimal" />
     <CookieConsent />
