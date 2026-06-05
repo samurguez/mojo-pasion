@@ -68,7 +68,7 @@ const checkoutConfig = {
         <section class="co-section">
           <div class="co-products" id="co-products">
             {PRODUCTS.map((product) => (
-              <div class="co-product-row" data-price-id={product.priceId}>
+              <div class="co-product-row" data-testid="checkout-product-row" data-price-id={product.priceId}>
                 <Image
                   src={product.image}
                   alt={product.imageAlt}
@@ -77,7 +77,7 @@ const checkoutConfig = {
                   height={112}
                 />
                 <div class="co-product-info">
-                  <span class="co-product-name">{product.name}</span>
+                  <span class="co-product-name" data-testid="checkout-product-name">{product.name}</span>
                   <div class="co-qty-ctrl">
                     <button
                       class="co-qty-btn"
@@ -86,7 +86,7 @@ const checkoutConfig = {
                       aria-label={`Quitar uno de ${product.name}`}
                       type="button"
                     >−</button>
-                    <span class="co-qty-val" id={`qty-${product.priceId}`}>0</span>
+                    <span class="co-qty-val" id={`qty-${product.priceId}`} data-testid="checkout-product-qty">0</span>
                     <button
                       class="co-qty-btn"
                       data-action="plus"
@@ -96,13 +96,13 @@ const checkoutConfig = {
                     >+</button>
                   </div>
                 </div>
-                <span class="co-product-total" id={`total-${product.priceId}`}>—</span>
+                <span class="co-product-total" id={`total-${product.priceId}`} data-testid="checkout-product-total">—</span>
               </div>
             ))}
           </div>
           <div class="co-subtotal-row">
             <span class="co-subtotal-label">Subtotal</span>
-            <span class="co-subtotal-val" id="co-subtotal">—</span>
+            <span class="co-subtotal-val" id="co-subtotal" data-testid="checkout-subtotal">—</span>
           </div>
           <p class="co-empty-msg" id="co-empty-msg" style="display:none">
             Selecciona al menos un tarro para continuar.
@@ -118,17 +118,17 @@ const checkoutConfig = {
           <!-- Opciones de método -->
           <div class="co-method-opts">
             <label class="co-method-label" for="method-shipping">
-              <input type="radio" name="delivery" value="shipping" id="method-shipping" checked />
+              <input type="radio" name="delivery" value="shipping" id="method-shipping" data-testid="delivery-method-shipping" checked />
               <div class="co-method-info">
                 <span class="co-method-name">Envío a domicilio</span>
                 <span class="co-method-sub">3–7 días · Canarias</span>
                 <span class="co-method-sub co-method-hint">Introduces la dirección en el siguiente paso</span>
               </div>
-              <span class="co-method-cost" id="shipping-cost-display">—</span>
+              <span class="co-method-cost" id="shipping-cost-display" data-testid="checkout-shipping-cost">—</span>
             </label>
 
             <label class="co-method-label" for="method-pickup">
-              <input type="radio" name="delivery" value="pickup" id="method-pickup" />
+              <input type="radio" name="delivery" value="pickup" id="method-pickup" data-testid="delivery-method-pickup" />
               <div class="co-method-info">
                 <span class="co-method-name">Recoger en punto de entrega</span>
                 <span class="co-method-sub">Tenerife · Te avisamos</span>
@@ -144,6 +144,7 @@ const checkoutConfig = {
               <input
                 type="text"
                 id="postal-code"
+                data-testid="checkout-postal-code"
                 class="form-input"
                 maxlength="5"
                 placeholder="38000"
@@ -151,7 +152,7 @@ const checkoutConfig = {
                 autocomplete="postal-code"
                 aria-required="true"
               />
-              <div id="zone-message" class="zone-message" style="display:none" aria-live="polite"></div>
+              <div id="zone-message" class="zone-message" data-testid="checkout-zone-message" style="display:none" aria-live="polite"></div>
             </div>
           </div>
 
@@ -189,7 +190,7 @@ const checkoutConfig = {
           <div class="co-total-row">
             <span class="co-total-label">Total</span>
             <div class="co-total-right">
-              <strong class="co-total-val" id="co-total">—</strong>
+              <strong class="co-total-val" id="co-total" data-testid="checkout-total">—</strong>
               <p class="co-tax-note">Impuestos incluidos</p>
             </div>
           </div>
@@ -199,7 +200,7 @@ const checkoutConfig = {
             <span class="co-consent-text">Avísame si hay promociones y/o novedades en Mojo Pasión</span>
           </label>
 
-          <button id="submit-btn" class="submit-btn" type="button">
+          <button id="submit-btn" class="submit-btn" data-testid="checkout-submit-btn" type="button">
             <span class="submit-btn-inner">
               Pago seguro
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
