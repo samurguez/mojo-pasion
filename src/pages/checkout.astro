@@ -972,9 +972,6 @@ const checkoutConfig = {
         color: #e0a0a0;
       }
 
-      .zone-error a, .co-link { color: #F5EDD8; }
-      .zone-error a:hover, .co-link:hover { color: #ffffff; }
-
       /* Aviso */
       .co-notice {
         font-family: var(--font-sans);
@@ -1207,6 +1204,9 @@ const checkoutConfig = {
 
     <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->
     <style is:global>
+      .zone-error a, .co-link { color: #F5EDD8; }
+      .zone-error a:hover, .co-link:hover { color: #ffffff; }
+
       .co-incentivo-text {
         flex: 1;
         padding: 0.85rem 1rem;
