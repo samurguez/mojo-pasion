@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { PRODUCTS } from '../lib/tienda-config';
 import { BUSINESS } from '../data/business';
 import { getImage } from 'astro:assets';
@@ -262,6 +263,7 @@ const jsonLd = {
     </script>
     <CookieConsent />
     <Analytics />
+    <SpeedInsights />
   </body>
 </html>
 <style>
