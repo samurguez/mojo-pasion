@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { BUSINESS } from '../data/business';
 
 const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
@@ -48,6 +49,7 @@ const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BU
     <Footer variant="minimal" />
     <CookieConsent />
     <Analytics />
+    <SpeedInsights />
   </body>
 </html>
 
