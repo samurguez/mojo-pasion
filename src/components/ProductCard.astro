@@ -15,7 +15,7 @@ interface Props {
 const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt } = Astro.props;
 ---
 
-<article class="product-card" data-price-id={priceId}>
+<article class="product-card" data-testid="product-card" data-price-id={priceId}>
   <div class="product-img-wrap">
     <Image
       src={image}
@@ -34,6 +34,7 @@ const { priceId, name, description, priceDisplay, priceInCents, image, imageAlt 
     <div class="product-bottom">
       <button
         class="product-add-btn"
+        data-testid="add-to-cart-btn"
         data-price-id={priceId}
         data-name={name}
         data-price-in-cents={String(priceInCents)}
