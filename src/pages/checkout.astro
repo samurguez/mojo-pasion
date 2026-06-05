@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CookieConsent from '../components/CookieConsent.astro';
+import Analytics from '@vercel/analytics/astro';
 import { SHIPPING_ZONES, PICKUP_POINTS, PRODUCTS } from '../lib/tienda-config';
 import { BUSINESS } from '../data/business';
 
@@ -1199,6 +1200,7 @@ const checkoutConfig = {
 
     <Footer variant="minimal" />
     <CookieConsent />
+    <Analytics />
 
     <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->
     <style is:global>

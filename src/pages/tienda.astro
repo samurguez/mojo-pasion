@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ProductCard from '../components/ProductCard.astro';
 import CookieConsent from '../components/CookieConsent.astro';
+import Analytics from '@vercel/analytics/astro';
 import { PRODUCTS } from '../lib/tienda-config';
 
 import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
@@ -115,5 +116,6 @@ import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.w
       }
     </style>
     <CookieConsent />
+    <Analytics />
   </body>
 </html>
