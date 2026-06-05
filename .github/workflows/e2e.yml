@@ -1,0 +1,58 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: Playwright (Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Cachea el binario de Chromium entre runs para ahorrar ~45s por ejecución.
+      # La clave incluye package-lock.json para invalidar si Playwright cambia de versión.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
+
+      # --with-deps instala las dependencias de sistema (libglib, libnss, etc.)
+      # necesarias para correr Chromium en Ubuntu. Siempre se ejecuta aunque
+      # el binario esté cacheado, porque las system deps no se cachean.
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      # Los 4 secrets los añades en GitHub → Settings → Secrets and variables →
+      # Actions. El proceso hijo (npm run dev / astro dev) los hereda
+      # automáticamente, por lo que /api/checkout puede llamar a Stripe.
+      - name: Run E2E tests
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+          PRICE_ID_MOJO_SUAVE: ${{ secrets.PRICE_ID_MOJO_SUAVE }}
+          PRICE_ID_MOJO_PICANTE: ${{ secrets.PRICE_ID_MOJO_PICANTE }}
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
