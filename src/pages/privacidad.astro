@@ -1,65 +1,46 @@
 ---
-import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import CookieConsent from '../components/CookieConsent.astro';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
+import Layout from '../layouts/Layout.astro';
 import { BUSINESS } from '../data/business';
 
 const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Política de Privacidad — Mojo Pasión</title>
-  </head>
-  <body>
-    <Header showCart={false} />
-    <main class="legal-content">
-      <h1>Política de Privacidad</h1>
+<Layout
+  title="Política de Privacidad — Mojo Pasión"
+  headerShowCart={false}
+  footerVariant="minimal"
+>
+  <main class="legal-content">
+    <h1>Política de Privacidad</h1>
 
-      <h2>Responsable del tratamiento</h2>
-<p>El responsable del tratamiento de los datos es <strong>Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en {address}, que opera bajo la marca Mojo Pasión.</p>
-<p>Email de contacto: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
+    <h2>Responsable del tratamiento</h2>
+    <p>El responsable del tratamiento de los datos es <strong>Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en {address}, que opera bajo la marca Mojo Pasión.</p>
+    <p>Email de contacto: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
 
-      <h2>Datos que recogemos</h2>
-      <p>Cuando realizas un pedido, recogemos los datos necesarios para procesarlo y entregarlo: nombre, dirección de correo electrónico, número de teléfono y, según el método de entrega elegido, la dirección de envío o el punto de recogida seleccionado. El pago se procesa a través de Stripe; no almacenamos los datos de tu tarjeta. Si lo autorizas expresamente marcando la casilla correspondiente durante la compra, también utilizamos tu dirección de correo electrónico para enviarte comunicaciones comerciales.</p>
+    <h2>Datos que recogemos</h2>
+    <p>Cuando realizas un pedido, recogemos los datos necesarios para procesarlo y entregarlo: nombre, dirección de correo electrónico, número de teléfono y, según el método de entrega elegido, la dirección de envío o el punto de recogida seleccionado. El pago se procesa a través de Stripe; no almacenamos los datos de tu tarjeta. Si lo autorizas expresamente marcando la casilla correspondiente durante la compra, también utilizamos tu dirección de correo electrónico para enviarte comunicaciones comerciales.</p>
 
-      <h2>Finalidad del tratamiento</h2>
-      <p>Los datos del pedido se utilizan para gestionar la compra, procesar el pago, preparar el envío o la recogida y mantener contigo la comunicación necesaria sobre tu pedido. Si has dado tu consentimiento, utilizamos tu correo electrónico para informarte de novedades y promociones de Mojo Pasión. No se utilizarán para ninguna otra finalidad sin tu consentimiento expreso.</p>
+    <h2>Finalidad del tratamiento</h2>
+    <p>Los datos del pedido se utilizan para gestionar la compra, procesar el pago, preparar el envío o la recogida y mantener contigo la comunicación necesaria sobre tu pedido. Si has dado tu consentimiento, utilizamos tu correo electrónico para informarte de novedades y promociones de Mojo Pasión. No se utilizarán para ninguna otra finalidad sin tu consentimiento expreso.</p>
 
-      <h2>Legitimación</h2>
-      <p>El tratamiento de los datos de tu pedido se basa en la ejecución del contrato de compraventa. El envío de comunicaciones comerciales se basa en tu consentimiento, otorgado de forma voluntaria al marcar la casilla correspondiente durante el proceso de compra. La conservación de los datos de facturación responde al cumplimiento de nuestras obligaciones legales.</p>
+    <h2>Legitimación</h2>
+    <p>El tratamiento de los datos de tu pedido se basa en la ejecución del contrato de compraventa. El envío de comunicaciones comerciales se basa en tu consentimiento, otorgado de forma voluntaria al marcar la casilla correspondiente durante el proceso de compra. La conservación de los datos de facturación responde al cumplimiento de nuestras obligaciones legales.</p>
 
-      <h2>Conservación de los datos</h2>
-      <p>Los datos asociados a tu pedido y a la facturación se conservan durante los plazos exigidos por la normativa fiscal y mercantil aplicable. Los datos utilizados para el envío de comunicaciones comerciales se conservan hasta que retires tu consentimiento o solicites su eliminación.</p>
+    <h2>Conservación de los datos</h2>
+    <p>Los datos asociados a tu pedido y a la facturación se conservan durante los plazos exigidos por la normativa fiscal y mercantil aplicable. Los datos utilizados para el envío de comunicaciones comerciales se conservan hasta que retires tu consentimiento o solicites su eliminación.</p>
 
-      <h2>Derechos del usuario</h2>
-      <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, así como retirar tu consentimiento en cualquier momento, enviando un email a <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>. También tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es">www.aepd.es</a>).</p>
+    <h2>Derechos del usuario</h2>
+    <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, así como retirar tu consentimiento en cualquier momento, enviando un email a <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>. También tienes derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es">www.aepd.es</a>).</p>
 
-      <h2>Cookies</h2>
-      <p>Este sitio web utiliza cookies de análisis (Google Analytics), para medir y mejorar el servicio, y cookies de marketing (Meta Pixel), para medir y optimizar nuestras campañas publicitarias. Ninguna de estas cookies se activa hasta que aceptas expresamente su uso a través del banner de cookies; si las rechazas, no se cargan.</p>
+    <h2>Cookies</h2>
+    <p>Este sitio web utiliza cookies de análisis (Google Analytics), para medir y mejorar el servicio, y cookies de marketing (Meta Pixel), para medir y optimizar nuestras campañas publicitarias. Ninguna de estas cookies se activa hasta que aceptas expresamente su uso a través del banner de cookies; si las rechazas, no se cargan.</p>
 
-      <h2>Transferencias internacionales</h2>
-      <p>Algunos de los proveedores que utilizamos pueden tratar datos fuera del Espacio Económico Europeo. Google (Google Analytics) y Meta (Meta Pixel) pueden tratar datos en Estados Unidos bajo las garantías del Marco de Privacidad de Datos UE-EE.UU. El procesamiento de los pagos se realiza a través de Stripe, que puede tratar datos en Estados Unidos amparándose en cláusulas contractuales tipo y en el citado Marco.</p>
-    </main>
-    <Footer variant="minimal" />
-    <CookieConsent />
-    <Analytics />
-    <SpeedInsights />
-  </body>
-</html>
+    <h2>Transferencias internacionales</h2>
+    <p>Algunos de los proveedores que utilizamos pueden tratar datos fuera del Espacio Económico Europeo. Google (Google Analytics) y Meta (Meta Pixel) pueden tratar datos en Estados Unidos bajo las garantías del Marco de Privacidad de Datos UE-EE.UU. El procesamiento de los pagos se realiza a través de Stripe, que puede tratar datos en Estados Unidos amparándose en cláusulas contractuales tipo y en el citado Marco.</p>
+  </main>
+</Layout>
 
 <style>
-  body {
-    background: var(--color-negro);
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-  }
-
   .legal-content {
     max-width: 760px;
     margin: 0 auto;
@@ -103,6 +84,4 @@ const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BU
     color: #666666;
     font-size: 13px;
   }
-
-
 </style>
