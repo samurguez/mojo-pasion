@@ -1,241 +1,217 @@
 ---
-import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import CookieConsent from '../components/CookieConsent.astro';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
-
-import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
-import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
-import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
-    <meta name="robots" content="noindex" />
-    <title>¡Pedido recibido! — Mojo Pasión</title>
+<Layout
+  title="¡Pedido recibido! — Mojo Pasión"
+  noindex
+  headerShowCart={false}
+  footerVariant="minimal"
+>
+  <main class="gracias-main">
+    <div class="gracias-container">
 
-  </head>
-
-  <body>
-    <Header showCart={false} />
-
-    <main class="gracias-main">
-      <div class="gracias-container">
-
-        <div class="gracias-icon" aria-hidden="true">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        </div>
-
-        <p class="gracias-label">Pedido recibido</p>
-        <h1 class="gracias-title">¡Gracias por<br />tu confianza!</h1>
-
-        <ul class="gracias-steps">
-          <li class="gracias-step">
-            <span class="gracias-step-body">Recibirás la confirmación por email en breve.</span>
-            <span class="gracias-step-note">Si no lo ves, revisa spam o promociones.</span>
-          </li>
-          <li class="gracias-step">
-            <span class="gracias-step-body" id="gracias-delivery-msg"></span>
-          </li>
-        </ul>
-
-        <a href="/" class="gracias-btn">Volver al inicio</a>
-        <p class="gracias-contact">¿Alguna duda? Escríbenos a <a href="mailto:hola@mojopasion.com" class="gracias-email">hola@mojopasion.com</a></p>
-
+      <div class="gracias-icon" aria-hidden="true">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
       </div>
-    </main>
 
-    <script is:inline>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Lee el carrito ANTES de vaciarlo — lo necesitamos para los eventos
-        var items = window.Cart.get();
-        var cartTotal = items.reduce(function(s, i) { return s + i.priceInCents * i.quantity; }, 0);
+      <p class="gracias-label">Pedido recibido</p>
+      <h1 class="gracias-title">¡Gracias por<br />tu confianza!</h1>
 
-        // session_id de Stripe en la URL
-        var urlParams = new URLSearchParams(window.location.search);
-        var sessionId = urlParams.get('session_id') || 'unknown';
+      <ul class="gracias-steps">
+        <li class="gracias-step">
+          <span class="gracias-step-body">Recibirás la confirmación por email en breve.</span>
+          <span class="gracias-step-note">Si no lo ves, revisa spam o promociones.</span>
+        </li>
+        <li class="gracias-step">
+          <span class="gracias-step-body" id="gracias-delivery-msg"></span>
+        </li>
+      </ul>
 
-        // Mensaje de entrega — segundo punto de la lista
-        var method = sessionStorage.getItem('mojo-delivery-method');
-        var msgEl = document.getElementById('gracias-delivery-msg');
-        if (msgEl) {
-          if (method === 'shipping') {
-            msgEl.textContent = 'Tu mojo saldrá en breve. El envío puede tardar entre 3 y 7 días.';
-          } else if (method === 'pickup') {
-            var point = sessionStorage.getItem('mojo-pickup-point') || '';
-            msgEl.textContent = 'Te contactaremos para concertar la recogida' + (point ? ' en ' + point : '') + '.';
-          } else {
-            msgEl.textContent = 'Nos pondremos en contacto contigo en los próximos días.';
-          }
+      <a href="/" class="gracias-btn">Volver al inicio</a>
+      <p class="gracias-contact">¿Alguna duda? Escríbenos a <a href="mailto:hola@mojopasion.com" class="gracias-email">hola@mojopasion.com</a></p>
+
+    </div>
+  </main>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Lee el carrito ANTES de vaciarlo — lo necesitamos para los eventos
+      var items = window.Cart.get();
+      var cartTotal = items.reduce(function(s, i) { return s + i.priceInCents * i.quantity; }, 0);
+
+      // session_id de Stripe en la URL
+      var urlParams = new URLSearchParams(window.location.search);
+      var sessionId = urlParams.get('session_id') || 'unknown';
+
+      // Mensaje de entrega — segundo punto de la lista
+      var method = sessionStorage.getItem('mojo-delivery-method');
+      var msgEl = document.getElementById('gracias-delivery-msg');
+      if (msgEl) {
+        if (method === 'shipping') {
+          msgEl.textContent = 'Tu mojo saldrá en breve. El envío puede tardar entre 3 y 7 días.';
+        } else if (method === 'pickup') {
+          var point = sessionStorage.getItem('mojo-pickup-point') || '';
+          msgEl.textContent = 'Te contactaremos para concertar la recogida' + (point ? ' en ' + point : '') + '.';
+        } else {
+          msgEl.textContent = 'Nos pondremos en contacto contigo en los próximos días.';
         }
-        sessionStorage.removeItem('mojo-delivery-method');
-        sessionStorage.removeItem('mojo-pickup-point');
+      }
+      sessionStorage.removeItem('mojo-delivery-method');
+      sessionStorage.removeItem('mojo-pickup-point');
 
-        // Vaciar el carrito
-        window.Cart.clear();
+      // Vaciar el carrito
+      window.Cart.clear();
 
-        // Eventos de analítica: purchase
-        if (items.length > 0 && sessionId !== 'unknown') {
-          var gaItems = items.map(function(i) {
-            return { item_id: i.priceId, item_name: i.name, price: i.priceInCents / 100, quantity: i.quantity };
+      // Eventos de analítica: purchase
+      if (items.length > 0 && sessionId !== 'unknown') {
+        var gaItems = items.map(function(i) {
+          return { item_id: i.priceId, item_name: i.name, price: i.priceInCents / 100, quantity: i.quantity };
+        });
+
+        if (typeof window.gtag === 'function') {
+          gtag('event', 'purchase', {
+            transaction_id: sessionId,
+            currency: 'EUR',
+            value: cartTotal / 100,
+            items: gaItems,
           });
-
-          if (typeof window.gtag === 'function') {
-            gtag('event', 'purchase', {
-              transaction_id: sessionId,
-              currency: 'EUR',
-              value: cartTotal / 100,
-              items: gaItems,
-            });
-          }
-
-          if (typeof window.fbq === 'function') {
-            fbq('track', 'Purchase', {
-              value: cartTotal / 100,
-              currency: 'EUR',
-              content_ids: items.map(function(i) { return i.priceId; }),
-              contents: items.map(function(i) { return { id: i.priceId, quantity: i.quantity }; }),
-              num_items: items.reduce(function(s, i) { return s + i.quantity; }, 0),
-            });
-          }
         }
-      });
-    </script>
 
-    <style>
-      .gracias-main {
-        padding-top: 80px;
-        min-height: 100vh;
-        background: var(--color-negro);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .gracias-container {
-        max-width: 520px;
-        margin: 0 auto;
-        padding: 4rem 2rem;
-        text-align: center;
-      }
-
-      .gracias-icon {
-        width: 64px;
-        height: 64px;
-        border: 0.5px solid rgba(100, 180, 100, 0.4);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 2rem;
-        color: #90c890;
-      }
-
-      .gracias-label {
-        font-family: var(--font-sans);
-        font-size: 11px;
-        font-weight: 300;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: var(--color-gris);
-        margin-bottom: 1rem;
-      }
-
-      .gracias-title {
-        font-family: var(--font-serif);
-        font-size: clamp(38px, 6vw, 60px);
-        font-weight: 400;
-        font-style: italic;
-        color: var(--color-crema);
-        line-height: 1.1;
-        margin-bottom: 2rem;
-      }
-
-      .gracias-steps {
-        list-style: none;
-        text-align: center;
-        margin: 0 auto 2.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-
-      .gracias-step-body {
-        font-family: var(--font-sans);
-        font-size: 14px;
-        font-weight: 300;
-        color: var(--color-gris);
-        line-height: 1.6;
-      }
-
-.gracias-step-note {
-        display: block;
-        font-family: var(--font-sans);
-        font-size: 13px;
-        font-weight: 300;
-        color: #999;
-        letter-spacing: 0.3px;
-        margin-top: 0.25rem;
-      }
-
-      .gracias-btn {
-        display: inline-block;
-        margin-top: 2rem;
-        padding: 0.9rem 2.5rem;
-        font-family: var(--font-sans);
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        text-decoration: none;
-        color: var(--color-crema);
-        border: 0.5px solid #444;
-        transition: border-color 0.2s, color 0.2s;
-      }
-
-      .gracias-btn:hover {
-        border-color: var(--color-rojo);
-        color: var(--color-rojo);
-      }
-
-      .gracias-contact {
-        font-family: var(--font-sans);
-        font-size: 13px;
-        font-weight: 300;
-        color: #999;
-        letter-spacing: 0.3px;
-        margin-top: 1.5rem;
-      }
-
-      .gracias-email {
-        color: var(--color-rojo);
-        text-decoration: underline;
-        text-underline-offset: 3px;
-      }
-
-      .gracias-email:hover {
-        color: var(--color-crema);
-      }
-
-      @media (max-width: 767px) {
-        .gracias-container {
-          padding: 3rem 1.5rem;
+        if (typeof window.fbq === 'function') {
+          fbq('track', 'Purchase', {
+            value: cartTotal / 100,
+            currency: 'EUR',
+            content_ids: items.map(function(i) { return i.priceId; }),
+            contents: items.map(function(i) { return { id: i.priceId, quantity: i.quantity }; }),
+            num_items: items.reduce(function(s, i) { return s + i.quantity; }, 0),
+          });
         }
       }
-    </style>
-    <Footer variant="minimal" />
-    <CookieConsent />
-    <Analytics />
-    <SpeedInsights />
-  </body>
-</html>
+    });
+  </script>
+</Layout>
+
+<style>
+  .gracias-main {
+    padding-top: 80px;
+    min-height: 100vh;
+    background: var(--color-negro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gracias-container {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .gracias-icon {
+    width: 64px;
+    height: 64px;
+    border: 0.5px solid rgba(100, 180, 100, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    color: #90c890;
+  }
+
+  .gracias-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    margin-bottom: 1rem;
+  }
+
+  .gracias-title {
+    font-family: var(--font-serif);
+    font-size: clamp(38px, 6vw, 60px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-crema);
+    line-height: 1.1;
+    margin-bottom: 2rem;
+  }
+
+  .gracias-steps {
+    list-style: none;
+    text-align: center;
+    margin: 0 auto 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .gracias-step-body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--color-gris);
+    line-height: 1.6;
+  }
+
+  .gracias-step-note {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 300;
+    color: #999;
+    letter-spacing: 0.3px;
+    margin-top: 0.25rem;
+  }
+
+  .gracias-btn {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.9rem 2.5rem;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-crema);
+    border: 0.5px solid #444;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .gracias-btn:hover {
+    border-color: var(--color-rojo);
+    color: var(--color-rojo);
+  }
+
+  .gracias-contact {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 300;
+    color: #999;
+    letter-spacing: 0.3px;
+    margin-top: 1.5rem;
+  }
+
+  .gracias-email {
+    color: var(--color-rojo);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .gracias-email:hover {
+    color: var(--color-crema);
+  }
+
+  @media (max-width: 767px) {
+    .gracias-container {
+      padding: 3rem 1.5rem;
+    }
+  }
+</style>
