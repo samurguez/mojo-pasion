@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /checkout
+Disallow: /gracias
+
+Sitemap: https://www.mojopasion.com/sitemap-index.xml
