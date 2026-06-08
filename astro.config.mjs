@@ -11,7 +11,11 @@ export default defineConfig({
   // `export const prerender = false` se compilan como Vercel Functions.
   output: 'static',
   adapter: vercel(),
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/checkout') && !page.includes('/gracias'),
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
