@@ -1,56 +1,37 @@
 ---
-import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import CookieConsent from '../components/CookieConsent.astro';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
+import Layout from '../layouts/Layout.astro';
 import { BUSINESS } from '../data/business';
 
 const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aviso Legal — Mojo Pasión</title>
-  </head>
-  <body>
-    <Header showCart={false} />
-    <main class="legal-content">
-      <h1>Aviso Legal</h1>
+<Layout
+  title="Aviso Legal — Mojo Pasión"
+  headerShowCart={false}
+  footerVariant="minimal"
+>
+  <main class="legal-content">
+    <h1>Aviso Legal</h1>
 
-      <h2>Titular del sitio web</h2>
-      <p>En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico, se informa que el titular de este sitio web es <strong> Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en {address}, que opera bajo la marca Mojo Pasión.</p>
-      <p>Email de contacto: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
+    <h2>Titular del sitio web</h2>
+    <p>En cumplimiento de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico, se informa que el titular de este sitio web es <strong> Samuel Rodríguez Domínguez</strong>, con DNI 45710716X y domicilio en {address}, que opera bajo la marca Mojo Pasión.</p>
+    <p>Email de contacto: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
 
-      <h2>Objeto y ámbito de aplicación</h2>
-      <p>Este sitio web tiene como objeto informar sobre los productos de Mojo Pasión y permitir su compra a través de la tienda online. La realización de un pedido a través de este sitio implica la aceptación de las condiciones de compra vigentes en el momento de la contratación.</p>
+    <h2>Objeto y ámbito de aplicación</h2>
+    <p>Este sitio web tiene como objeto informar sobre los productos de Mojo Pasión y permitir su compra a través de la tienda online. La realización de un pedido a través de este sitio implica la aceptación de las condiciones de compra vigentes en el momento de la contratación.</p>
 
-      <h2>Propiedad intelectual</h2>
-      <p>Todos los contenidos de este sitio web — textos, fotografías, logotipos, diseño y código — son propiedad de Mojo Pasión o se utilizan con autorización de sus titulares. Queda prohibida su reproducción, distribución o comunicación pública sin autorización expresa.</p>
+    <h2>Propiedad intelectual</h2>
+    <p>Todos los contenidos de este sitio web — textos, fotografías, logotipos, diseño y código — son propiedad de Mojo Pasión o se utilizan con autorización de sus titulares. Queda prohibida su reproducción, distribución o comunicación pública sin autorización expresa.</p>
 
-      <h2>Responsabilidad</h2>
-      <p>Mojo Pasión no se hace responsable de los daños o perjuicios que pudieran derivarse del uso de la información contenida en este sitio web.</p>
+    <h2>Responsabilidad</h2>
+    <p>Mojo Pasión no se hace responsable de los daños o perjuicios que pudieran derivarse del uso de la información contenida en este sitio web.</p>
 
-      <h2>Legislación aplicable</h2>
-      <p>Este aviso legal se rige por la legislación española. Para cualquier controversia derivada del uso de este sitio web, las partes se someten a los juzgados y tribunales de Santa Cruz de Tenerife.</p>
-    </main>
-    <Footer variant="minimal" />
-    <CookieConsent />
-    <Analytics />
-    <SpeedInsights />
-  </body>
-</html>
+    <h2>Legislación aplicable</h2>
+    <p>Este aviso legal se rige por la legislación española. Para cualquier controversia derivada del uso de este sitio web, las partes se someten a los juzgados y tribunales de Santa Cruz de Tenerife.</p>
+  </main>
+</Layout>
 
 <style>
-  body {
-    background: var(--color-negro);
-    color: var(--color-crema);
-    font-family: var(--font-sans);
-  }
-
   .legal-content {
     max-width: 760px;
     margin: 0 auto;
@@ -94,6 +75,4 @@ const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BU
     color: #666666;
     font-size: 13px;
   }
-
-
 </style>
