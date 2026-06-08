@@ -1,18 +1,9 @@
 ---
-import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Layout from '../layouts/Layout.astro';
 import ProductCard from '../components/ProductCard.astro';
-import CookieConsent from '../components/CookieConsent.astro';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
 import { PRODUCTS } from '../lib/tienda-config';
 import { BUSINESS } from '../data/business';
 import { getImage } from 'astro:assets';
-
-import cormorantLatin400 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2?url';
-import cormorantLatin400i from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2?url';
-import dmSansLatin300 from '@fontsource/dm-sans/files/dm-sans-latin-300-normal.woff2?url';
 
 const BASE = 'https://www.mojopasion.com';
 
@@ -101,171 +92,157 @@ const jsonLd = {
 };
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<Layout
+  title="Mojo Pasión — Mojo rojo palmero artesano"
+  description="No es para todos. Es para ti. Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias."
+  ogTitle="Mojo Pasión — No es para todos. Es para ti."
+  ogDescription="Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias."
+  canonical="https://www.mojopasion.com"
+  headerShowCta
+  headerTransparentOnTop
+  schemaJsonLd={jsonLd}
+>
+  <!-- HERO -->
+  <section class="hero">
+    <img src="/images/hero.avif" alt="Tarro de mojo rojo palmero artesano sobre madera — Mojo Pasión canario" class="hero-img" />
+    <div class="hero-content">
+      <h1 class="hero-small">Mojo rojo palmero artesano</h1>
+      <p class="hero-title">No es para todos</p>
+      <p class="hero-subtitle">Es para ti.</p>
+      <a href="/tienda" class="hero-cta">Comprar</a>
+    </div>
+  </section>
 
-    <!-- Preload fuentes críticas (latin) para evitar render blocking -->
-    <link rel="preload" href={cormorantLatin400} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={cormorantLatin400i} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={dmSansLatin300} as="font" type="font/woff2" crossorigin />
-
-    <title>Mojo Pasión — Mojo rojo palmero artesano</title>
-    <meta name="description" content="No es para todos. Es para ti. Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias." />
-
-<!-- Open Graph -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://www.mojopasion.com" />
-<meta property="og:title" content="Mojo Pasión — No es para todos. Es para ti." />
-<meta property="og:description" content="Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias." />
-<meta property="og:image" content="https://www.mojopasion.com/images/hero.jpg" />
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Mojo Pasión — No es para todos. Es para ti." />
-<meta name="twitter:description" content="Mojo rojo palmero artesano con pimienta de Puntagorda, sal de Fuencaliente y receta de familia. Hecho a mano en Canarias." />
-<meta name="twitter:image" content="https://www.mojopasion.com/images/hero.jpg" />
-    <!-- JSON-LD -->
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
-
-  </head>
-  <body>
-  <Header showCta transparentOnTop />
-    <!-- HERO -->
-      <section class="hero">
-        <img src="/images/hero.avif" alt="Tarro de mojo rojo palmero artesano sobre madera — Mojo Pasión canario" class="hero-img" />
-        <div class="hero-content">
-          <h1 class="hero-small">Mojo rojo palmero artesano</h1>
-          <p class="hero-title">No es para todos</p>
-          <p class="hero-subtitle">Es para ti.</p>
-<a href="/tienda" class="hero-cta">Comprar</a>
+  <!-- PIMIENTA PALMERA -->
+  <section class="ingrediente fade-in">
+    <img src="/images/pimienta.avif" alt="Pimienta palmera de Puntagorda — ingrediente artesano del mojo rojo canario" class="ingrediente-img" style="object-position: center 65%;" />
+    <div class="ingrediente-content derecha">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">Pimienta palmera, punto.</h2>
+          <p class="ingrediente-sub">Hay muchos mojos, este es auténtico mojo rojo palmero.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- PIMIENTA PALMERA -->
-      <section class="ingrediente fade-in">
-        <img src="/images/pimienta.avif" alt="Pimienta palmera de Puntagorda — ingrediente artesano del mojo rojo canario" class="ingrediente-img" style="object-position: center 65%;" />
-        <div class="ingrediente-content derecha">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">Pimienta palmera, punto.</h2>
-              <p class="ingrediente-sub">Hay muchos mojos, este es auténtico mojo rojo palmero.</p>
-            </div>
-          </div>
+  <!-- SAL DE FUENCALIENTE -->
+  <section class="ingrediente">
+    <img src="/images/sal.avif" alt="Sal marina de Fuencaliente — ingrediente artesano del mojo rojo palmero" class="ingrediente-img" />
+    <div class="ingrediente-content izquierda">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">Sal marina de Fuencaliente.</h2>
+          <p class="ingrediente-sub">El ingrediente que nadie nombra su origen, y a nosotros nos enorgullece.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- SAL DE FUENCALIENTE -->
-      <section class="ingrediente">
-        <img src="/images/sal.avif" alt="Sal marina de Fuencaliente — ingrediente artesano del mojo rojo palmero" class="ingrediente-img" />
-        <div class="ingrediente-content izquierda">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">Sal marina de Fuencaliente.</h2>
-              <p class="ingrediente-sub">El ingrediente que nadie nombra su origen, y a nosotros nos enorgullece.</p>
-            </div>
-          </div>
+  <!-- ACEITE DE OLIVA -->
+  <section class="ingrediente">
+    <img src="/images/aceite.avif" alt="Aceite de oliva virgen extra — base del mojo rojo palmero artesano canario" class="ingrediente-img" />
+    <div class="ingrediente-content derecha">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">Aceite de oliva, sin debate.</h2>
+          <p class="ingrediente-sub">Acompañado con el toque justo de vinagre de vino.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- ACEITE DE OLIVA -->
-      <section class="ingrediente">
-        <img src="/images/aceite.avif" alt="Aceite de oliva virgen extra — base del mojo rojo palmero artesano canario" class="ingrediente-img" />
-        <div class="ingrediente-content derecha">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">Aceite de oliva, sin debate.</h2>
-              <p class="ingrediente-sub">Acompañado con el toque justo de vinagre de vino.</p>
-            </div>
-          </div>
+  <!-- AJO DEL PAÍS -->
+  <section class="ingrediente">
+    <img src="/images/ajo.avif" alt="Ajo del país canario — ingrediente artesano del mojo rojo palmero" class="ingrediente-img" style="object-position: center bottom;" />
+    <div class="ingrediente-content izquierda">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">Ajo del país, el que sabe.</h2>
+          <p class="ingrediente-sub">Pequeño, imperfecto, insustituible.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- AJO DEL PAÍS -->
-      <section class="ingrediente">
-        <img src="/images/ajo.avif" alt="Ajo del país canario — ingrediente artesano del mojo rojo palmero" class="ingrediente-img" style="object-position: center bottom;" />
-        <div class="ingrediente-content izquierda">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">Ajo del país, el que sabe.</h2>
-              <p class="ingrediente-sub">Pequeño, imperfecto, insustituible.</p>
-            </div>
-          </div>
+  <!-- COMINO -->
+  <section class="ingrediente">
+    <img src="/images/comino.avif" alt="Comino en grano — especia artesana del mojo rojo palmero canario" class="ingrediente-img" style="object-position: 20% center;" />
+    <div class="ingrediente-content derecha">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">Comino, el que no se ve pero se siente.</h2>
+          <p class="ingrediente-sub">Discreto. Imprescindible. El grano que le da el toque.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- COMINO -->
-      <section class="ingrediente">
-        <img src="/images/comino.avif" alt="Comino en grano — especia artesana del mojo rojo palmero canario" class="ingrediente-img" style="object-position: 20% center;" />
-        <div class="ingrediente-content derecha">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">Comino, el que no se ve pero se siente.</h2>
-              <p class="ingrediente-sub">Discreto. Imprescindible. El grano que le da el toque.</p>
-            </div>
-          </div>
+  <!-- LAS MANOS -->
+  <section class="ingrediente">
+    <img src="/images/manos.avif" alt="Manos artesanas elaborando mojo rojo palmero canario — receta tradicional" class="ingrediente-img" />
+    <div class="ingrediente-content izquierda">
+      <div class="ingrediente-texto">
+        <div class="ingrediente-barra"></div>
+        <div class="ingrediente-copy">
+          <h2 class="ingrediente-title">El ingrediente estrella, el que no se puede comprar.</h2>
+          <p class="ingrediente-sub">Las manos de quien lleva décadas haciendo el mojo rojo palmero. Mojo Pasión.</p>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
-      <!-- LAS MANOS -->
-      <section class="ingrediente">
-        <img src="/images/manos.avif" alt="Manos artesanas elaborando mojo rojo palmero canario — receta tradicional" class="ingrediente-img" />
-        <div class="ingrediente-content izquierda">
-          <div class="ingrediente-texto">
-            <div class="ingrediente-barra"></div>
-            <div class="ingrediente-copy">
-              <h2 class="ingrediente-title">El ingrediente estrella, el que no se puede comprar.</h2>
-              <p class="ingrediente-sub">Las manos de quien lleva décadas haciendo el mojo rojo palmero. Mojo Pasión.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+  <!-- PRODUCTOS -->
+  <section class="productos fade-in" id="productos">
+    <div class="productos-grid">
+      {PRODUCTS.map((product) => (
+        <ProductCard
+          priceId={product.priceId}
+          name={product.name}
+          description={product.description}
+          priceDisplay={product.priceDisplay}
+          priceInCents={product.priceInCents}
+          image={product.image}
+          imageAlt={product.imageAlt}
+        />
+      ))}
+    </div>
+  </section>
 
-      <!-- PRODUCTOS -->
-      <section class="productos fade-in" id="productos">
-        <div class="productos-grid">
-          {PRODUCTS.map((product) => (
-            <ProductCard
-              priceId={product.priceId}
-              name={product.name}
-              description={product.description}
-              priceDisplay={product.priceDisplay}
-              priceInCents={product.priceInCents}
-              image={product.image}
-              imageAlt={product.imageAlt}
-            />
-          ))}
-        </div>
-      </section>
+  <!-- CTA PAPA -->
+  <section class="cta-papa fade-in">
+    <img src="/images/papa.avif" alt="Papa arrugada canaria con mojo rojo palmero artesano — Mojo Pasión" class="cta-papa-img" />
+    <div class="cta-papa-content">
+      <p class="hero-title">¿Tienes un <span style="color: var(--color-rojo);">negocio?</span></p>
+      <p class="papa-subtitle">Formatos HORECA para llevar el mojo palmero artesano a tu carta.</p>
+      <a href="mailto:hola@mojopasion.com" class="hero-cta">Escríbenos</a>
+    </div>
+  </section>
 
-      <!-- CTA PAPA -->
-      <section class="cta-papa fade-in">
-        <img src="/images/papa.avif" alt="Papa arrugada canaria con mojo rojo palmero artesano — Mojo Pasión" class="cta-papa-img" />
-        <div class="cta-papa-content">
-          <p class="hero-title">¿Tienes un <span style="color: var(--color-rojo);">negocio?</span></p>
-          <p class="papa-subtitle">Formatos HORECA para llevar el mojo palmero artesano a tu carta.</p>
-          <a href="mailto:hola@mojopasion.com" class="hero-cta">Escríbenos</a>
-        </div>
-      </section>
+  <script>
+    import '../lib/cart.ts';
+  </script>
 
-    </main>
-<!-- FOOTER -->
-      <Footer />
-    <script>
-      import '../lib/cart.ts';
-    </script>
-    <CookieConsent />
-    <Analytics />
-    <SpeedInsights />
-  </body>
-</html>
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    });
+  </script>
+</Layout>
+
 <style>
   .hero {
     position: relative;
@@ -471,7 +448,6 @@ const jsonLd = {
   }
 
   @media (max-width: 768px) {
-
     .hero-content {
       left: 5%;
       right: 5%;
@@ -529,22 +505,5 @@ const jsonLd = {
       font-size: clamp(20px, 5vw, 28px);
       margin-top: 1rem;
     }
-
   }
-
-
 </style>
-
-<script is:inline>
-  document.addEventListener('DOMContentLoaded', () => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  });
-</script>
