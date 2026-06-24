@@ -106,7 +106,7 @@ const checkoutConfig = {
             <span class="co-subtotal-label">Subtotal</span>
             <span class="co-subtotal-val" id="co-subtotal" data-testid="checkout-subtotal">—</span>
           </div>
-          <p class="co-empty-msg" id="co-empty-msg" style="display:none">
+          <p class="feedback feedback--error" id="co-empty-msg" style="display:none">
             Selecciona al menos un tarro para continuar.
           </p>
         </section>
@@ -154,7 +154,7 @@ const checkoutConfig = {
                 autocomplete="postal-code"
                 aria-required="true"
               />
-              <div id="zone-message" class="zone-message" data-testid="checkout-zone-message" style="display:none" aria-live="polite"></div>
+              <div id="zone-message" class="feedback" data-testid="checkout-zone-message" style="display:none" aria-live="polite"></div>
             </div>
           </div>
 
@@ -210,7 +210,7 @@ const checkoutConfig = {
               </svg>
             </span>
           </button>
-          <p id="submit-error" class="submit-error" style="display:none" role="alert"></p>
+          <p id="submit-error" class="feedback feedback--error" style="display:none" role="alert"></p>
           <p class="submit-note">Serás redirigido a Stripe para completar el pago de forma segura.</p>
         </div>
         </div>
@@ -286,7 +286,7 @@ const checkoutConfig = {
         if (summarySubEl) summarySubEl.textContent = sub > 0 ? fmtEur(sub) : '—';
 
         var emptyMsg = document.getElementById('co-empty-msg');
-        if (emptyMsg) emptyMsg.style.display = totalItems() === 0 ? 'block' : 'none';
+        if (emptyMsg) emptyMsg.style.display = totalItems() === 0 ? 'flex' : 'none';
 
         if (totalItems() > 0) {
           var productsEl2 = document.getElementById('co-products');
@@ -399,18 +399,18 @@ const checkoutConfig = {
 
         if (prefix === zones.tenerife.postalPrefix) {
           currentZone = 'tenerife';
-          msgEl.className = 'zone-message zone-ok';
-          msgEl.textContent = '✓ Canarias · envío disponible';
+          msgEl.className = 'feedback feedback--success';
+          msgEl.textContent = 'Canarias · envío disponible';
         } else if (prefix === zones.canarias.postalPrefix) {
           currentZone = 'canarias';
-          msgEl.className = 'zone-message zone-ok';
-          msgEl.textContent = '✓ Canarias · envío disponible';
+          msgEl.className = 'feedback feedback--success';
+          msgEl.textContent = 'Canarias · envío disponible';
         } else {
           currentZone = null;
-          msgEl.className = 'zone-message zone-error';
+          msgEl.className = 'feedback feedback--error';
           msgEl.innerHTML = 'De momento solo enviamos a Canarias. ¿Quieres recibirlo en la península? <a href="/contacto?tipo=peninsula" class="co-link">Escríbenos</a>';
         }
-        msgEl.style.display = 'block';
+        msgEl.style.display = 'flex';
 
         recalcShipping();
         updateIncentivo();
@@ -433,7 +433,8 @@ const checkoutConfig = {
         if (!existing) {
           var errEl = document.createElement('p');
           errEl.id = errId;
-          errEl.className = 'field-error-msg';
+          errEl.className = 'feedback feedback--error';
+          errEl.setAttribute('role', 'alert');
           errEl.setAttribute('aria-live', 'polite');
           errEl.textContent = msg;
           el.insertAdjacentElement('afterend', errEl);
@@ -588,7 +589,7 @@ const checkoutConfig = {
                 btn.textContent = 'Pago seguro';
                 if (errorEl) {
                   errorEl.textContent = err.message || 'Error inesperado. Inténtalo de nuevo.';
-                  errorEl.style.display = 'block';
+                  errorEl.style.display = 'flex';
                 }
               }
             }
@@ -819,13 +820,6 @@ const checkoutConfig = {
         font-feature-settings: "lnum" 1;
       }
 
-      .co-empty-msg {
-        font-family: var(--font-sans);
-        font-size: 12px;
-        font-weight: 300;
-        color: var(--color-rojo);
-        margin-top: 0.75rem;
-      }
 
       /* Métodos de entrega */
       .co-method-opts {
@@ -950,27 +944,6 @@ const checkoutConfig = {
 
       .form-select option { background: #1a1a1a; }
 
-      /* Zona feedback */
-      .zone-message {
-        margin-top: 0.75rem;
-        padding: 0.7rem 1rem;
-        font-family: var(--font-sans);
-        font-size: 12px;
-        font-weight: 300;
-        line-height: 1.6;
-      }
-
-      .zone-ok {
-        background: rgba(100, 180, 100, 0.08);
-        border: 0.5px solid rgba(100, 180, 100, 0.3);
-        color: #90c890;
-      }
-
-      .zone-error {
-        background: rgba(232, 0, 45, 0.07);
-        border: 0.5px solid rgba(232, 0, 45, 0.3);
-        color: #e0a0a0;
-      }
 
       /* Aviso */
       .co-notice {
@@ -1081,31 +1054,10 @@ const checkoutConfig = {
         border-radius: 4px;
       }
 
-      .field-error-msg {
-        margin: 0.3rem 0 0;
-        font-family: var(--font-sans);
-        font-size: 12px;
-        font-weight: 300;
-        color: #e06060;
-        line-height: 1.4;
-      }
-
       .submit-btn-inner {
         display: inline-flex;
         align-items: center;
         gap: 0.6em;
-      }
-
-      .submit-error {
-        margin-top: 0.75rem;
-        padding: 0.75rem 1rem;
-        background: rgba(232, 0, 45, 0.07);
-        border: 0.5px solid rgba(232, 0, 45, 0.3);
-        font-family: var(--font-sans);
-        font-size: 12px;
-        font-weight: 300;
-        color: #e0a0a0;
-        line-height: 1.5;
       }
 
       .submit-note {
@@ -1184,14 +1136,11 @@ const checkoutConfig = {
         .co-total-label    { font-size: 12px; }
 
         /* Supporting text */
-        .zone-message      { font-size: 13px; }
         .co-notice         { font-size: 13px; }
         .co-incentivo-inline { font-size: 13px; }
-        .co-empty-msg      { font-size: 13px; }
 
         /* CTA & footer notes */
         .submit-btn        { font-size: 13px; }
-        .submit-error      { font-size: 13px; }
         .submit-note       { font-size: 12px; }
         .co-tax-note       { font-size: 12px; }
       }
@@ -1204,9 +1153,6 @@ const checkoutConfig = {
 
     <!-- Estilos para elementos inyectados vía innerHTML (no reciben el hash de scoping de Astro) -->
     <style is:global>
-      .zone-error a, .co-link { color: #F5EDD8; }
-      .zone-error a:hover, .co-link:hover { color: #ffffff; }
-
       .co-incentivo-text {
         flex: 1;
         padding: 0.85rem 1rem;
@@ -1220,7 +1166,7 @@ const checkoutConfig = {
       }
 
       .co-incentivo-green {
-        color: #90c890;
+        color: var(--color-exito);
         font-weight: 300;
       }
 

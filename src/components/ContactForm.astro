@@ -83,7 +83,13 @@ const TIPOS = [
 
     const setStatus = (msg: string, kind: 'ok' | 'error' | '') => {
       statusEl.textContent = msg;
-      statusEl.dataset.kind = kind;
+      // Vacío → sin badge; con mensaje → clases del sistema feedback unificado.
+      if (!msg) {
+        statusEl.className = 'cf-status';
+        return;
+      }
+      const mod = kind === 'ok' ? 'success' : kind === 'error' ? 'error' : 'info';
+      statusEl.className = `cf-status feedback feedback--${mod}`;
     };
 
     form.addEventListener('submit', async (e) => {
@@ -218,13 +224,9 @@ const TIPOS = [
   .cf-submit:hover { opacity: 0.88; }
   .cf-submit:disabled { opacity: 0.5; cursor: default; }
 
-  .cf-status {
-    font-size: 14px;
-    font-weight: 300;
-    min-height: 1.2em;
-    margin: 0;
+  /* Colores/badge los aporta el sistema .feedback (global) cuando hay mensaje.
+     Vacío = solo .cf-status, sin caja. El margin separa del botón de envío. */
+  .cf-status:not(:empty) {
+    margin-top: 0.25rem;
   }
-
-  .cf-status[data-kind='ok'] { color: var(--color-crema); }
-  .cf-status[data-kind='error'] { color: var(--color-rojo); }
 </style>
