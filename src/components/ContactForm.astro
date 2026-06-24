@@ -66,6 +66,14 @@ const TIPOS = [
     const subjectInput = form.querySelector('input[name="_subject"]') as HTMLInputElement;
     const endpoint = form.dataset.endpoint ?? '';
 
+    // Falla ruidosa, no silenciosa: si PUBLIC_FORMSPREE_ID no llegó en build
+    // (típico: env var no configurada en Vercel), el endpoint queda como
+    // ".../f/" sin ID. Lo detectamos para no postear a una URL inválida.
+    const endpointOk = /\/f\/.+/.test(endpoint);
+    if (!endpointOk) {
+      console.error('[ContactForm] Endpoint Formspree sin ID. ¿Falta PUBLIC_FORMSPREE_ID en el entorno?', endpoint);
+    }
+
     // Preselección por query param ?tipo= (solo si el valor existe en el select)
     const tipoParam = new URLSearchParams(location.search).get('tipo');
     if (tipoParam) {
@@ -83,6 +91,11 @@ const TIPOS = [
 
       if (!form.checkValidity()) {
         form.reportValidity();
+        return;
+      }
+
+      if (!endpointOk) {
+        setStatus('No se pudo enviar. Escríbenos a hola@mojopasion.com', 'error');
         return;
       }
 
@@ -188,7 +201,7 @@ const TIPOS = [
   .cf-consent a { color: var(--color-rojo); text-decoration: none; }
 
   .cf-submit {
-    align-self: flex-start;
+    width: 100%;
     padding: 0.9rem 2.5rem;
     background: var(--color-rojo);
     border: none;
