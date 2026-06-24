@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContactForm from '../components/ContactForm.astro';
+---
+
+<Layout
+  title="Contacto — Mojo Pasión"
+  description="¿Tienes una duda, eres un comercio o quieres recibir el mojo en península? Escríbenos y te respondemos pronto."
+  canonical="https://www.mojopasion.com/contacto"
+  headerShowCart={false}
+  footerVariant="minimal"
+>
+  <main class="contact-content">
+    <h1>Hablemos</h1>
+    <p class="contact-intro">
+      Cuéntanos qué necesitas — seas cliente, un comercio que quiere el mojo en su
+      carta, o quieras recibirlo en península. Te respondemos pronto.
+    </p>
+
+    <ContactForm />
+  </main>
+</Layout>
+
+<style>
+  .contact-content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+  }
+
+  @media (max-width: 768px) {
+    .contact-content { padding: 5rem 1.5rem 3rem; }
+  }
+
+  .contact-content h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    color: var(--color-crema);
+    margin-bottom: 1rem;
+  }
+
+  .contact-intro {
+    font-size: 16px;
+    font-weight: 300;
+    color: #AAAAAA;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+</style>
