@@ -1,0 +1,217 @@
+---
+// Formulario de contacto con envío a Formspree vía fetch (sin abandonar el sitio).
+// El ID de Formspree llega desde env (PUBLIC_FORMSPREE_ID) y se inyecta en el
+// data-attribute del form para que el script cliente construya el endpoint.
+const formspreeId = import.meta.env.PUBLIC_FORMSPREE_ID ?? '';
+
+// Tipos de consulta: value = el que llega por ?tipo=, label = lo que ve el usuario
+// y lo que se usa en el asunto dinámico del email.
+const TIPOS = [
+  { value: 'cliente', label: 'Cliente' },
+  { value: 'comercio', label: 'Comercio (HORECA)' },
+  { value: 'peninsula', label: 'Envío a península' },
+  { value: 'prensa', label: 'Prensa' },
+  { value: 'otro', label: 'Otro' },
+] as const;
+---
+
+<form
+  id="contact-form"
+  data-endpoint={`https://formspree.io/f/${formspreeId}`}
+  novalidate
+>
+  <div class="form-row">
+    <label class="form-label" for="cf-nombre">Nombre</label>
+    <input class="form-input" type="text" id="cf-nombre" name="nombre" required autocomplete="name" />
+  </div>
+
+  <div class="form-row">
+    <label class="form-label" for="cf-email">Email</label>
+    <input class="form-input" type="email" id="cf-email" name="email" required autocomplete="email" />
+  </div>
+
+  <div class="form-row">
+    <label class="form-label" for="cf-tipo">Tipo de consulta</label>
+    <select class="form-select" id="cf-tipo" name="tipo">
+      {TIPOS.map((t) => <option value={t.value}>{t.label}</option>)}
+    </select>
+  </div>
+
+  <div class="form-row">
+    <label class="form-label" for="cf-mensaje">Mensaje</label>
+    <textarea class="form-input form-textarea" id="cf-mensaje" name="mensaje" rows="6" required></textarea>
+  </div>
+
+  <!-- Honeypot anti-spam: invisible para humanos, Formspree descarta si viene relleno -->
+  <input type="text" name="_gotcha" class="cf-gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <!-- Asunto del email: lo actualiza el script según el tipo de consulta -->
+  <input type="hidden" name="_subject" value="Contacto web — Mojo Pasión" />
+
+  <label class="cf-consent">
+    <input type="checkbox" id="cf-consent" name="consentimiento" required />
+    <span>He leído y acepto la <a href="/privacidad">política de privacidad</a>.</span>
+  </label>
+
+  <button type="submit" class="cf-submit" id="cf-submit">Enviar mensaje</button>
+
+  <p class="cf-status" id="cf-status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const statusEl = document.getElementById('cf-status') as HTMLParagraphElement;
+    const submitBtn = document.getElementById('cf-submit') as HTMLButtonElement;
+    const tipoSelect = document.getElementById('cf-tipo') as HTMLSelectElement;
+    const subjectInput = form.querySelector('input[name="_subject"]') as HTMLInputElement;
+    const endpoint = form.dataset.endpoint ?? '';
+
+    // Preselección por query param ?tipo= (solo si el valor existe en el select)
+    const tipoParam = new URLSearchParams(location.search).get('tipo');
+    if (tipoParam) {
+      const exists = Array.from(tipoSelect.options).some((o) => o.value === tipoParam);
+      if (exists) tipoSelect.value = tipoParam;
+    }
+
+    const setStatus = (msg: string, kind: 'ok' | 'error' | '') => {
+      statusEl.textContent = msg;
+      statusEl.dataset.kind = kind;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // Asunto dinámico según el tipo seleccionado
+      const tipoLabel = tipoSelect.options[tipoSelect.selectedIndex].text;
+      subjectInput.value = `Contacto web — ${tipoLabel}`;
+
+      submitBtn.disabled = true;
+      setStatus('Enviando…', '');
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          form.reset();
+          setStatus('✓ Mensaje enviado. Te responderemos pronto.', 'ok');
+        } else {
+          setStatus('No se pudo enviar. Escríbenos a hola@mojopasion.com', 'error');
+          submitBtn.disabled = false;
+        }
+      } catch {
+        setStatus('No se pudo enviar. Escríbenos a hola@mojopasion.com', 'error');
+        submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  #contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: #161616;
+    border: 0.5px solid #2a2a2a;
+    color: var(--color-crema);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus,
+  .form-select:focus { border-color: var(--color-gris); }
+  .form-input::placeholder { color: #3a3a3a; }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.6;
+  }
+
+  .cf-gotcha {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .cf-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 14px;
+    font-weight: 300;
+    color: #AAAAAA;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  .cf-consent input { margin-top: 0.25rem; accent-color: var(--color-rojo); }
+  .cf-consent a { color: var(--color-rojo); text-decoration: none; }
+
+  .cf-submit {
+    align-self: flex-start;
+    padding: 0.9rem 2.5rem;
+    background: var(--color-rojo);
+    border: none;
+    color: var(--color-crema);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .cf-submit:hover { opacity: 0.88; }
+  .cf-submit:disabled { opacity: 0.5; cursor: default; }
+
+  .cf-status {
+    font-size: 14px;
+    font-weight: 300;
+    min-height: 1.2em;
+    margin: 0;
+  }
+
+  .cf-status[data-kind='ok'] { color: var(--color-crema); }
+  .cf-status[data-kind='error'] { color: var(--color-rojo); }
+</style>

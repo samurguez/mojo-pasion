@@ -1,0 +1,95 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { BUSINESS } from '../data/business';
+
+const address = `${BUSINESS.address.street}, ${BUSINESS.address.postalCode} ${BUSINESS.address.city}, ${BUSINESS.address.province}`;
+---
+
+<Layout
+  title="Contacto — Mojo Pasión"
+  description="¿Tienes una duda, eres un comercio o quieres recibir el mojo en península? Escríbenos y te respondemos pronto."
+  canonical="https://www.mojopasion.com/contacto"
+  headerShowCart={false}
+  footerVariant="minimal"
+>
+  <main class="contact-content">
+    <h1>Hablemos</h1>
+    <p class="contact-intro">
+      Cuéntanos qué necesitas — seas cliente, un comercio que quiere el mojo en su
+      carta, o quieras recibirlo en península. Te respondemos pronto.
+    </p>
+
+    <ContactForm />
+
+    <div class="contact-direct">
+      <p class="contact-direct-label">¿Prefieres escribirnos directamente?</p>
+      <p>
+        Email: <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
+      </p>
+      <p class="contact-address">{address}</p>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .contact-content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+  }
+
+  @media (max-width: 768px) {
+    .contact-content { padding: 5rem 1.5rem 3rem; }
+  }
+
+  .contact-content h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    color: var(--color-crema);
+    margin-bottom: 1rem;
+  }
+
+  .contact-intro {
+    font-size: 16px;
+    font-weight: 300;
+    color: #AAAAAA;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-direct {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid #2a2a2a;
+  }
+
+  .contact-direct-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gris);
+    margin-bottom: 1rem;
+  }
+
+  .contact-direct p {
+    font-size: 15px;
+    font-weight: 300;
+    color: #AAAAAA;
+    line-height: 1.8;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-direct a {
+    color: var(--color-rojo);
+    text-decoration: none;
+  }
+
+  .contact-address {
+    font-size: 13px;
+    color: var(--color-gris);
+  }
+</style>
