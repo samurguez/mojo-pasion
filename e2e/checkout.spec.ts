@@ -81,3 +81,19 @@ test.describe('Checkout', () => {
     expect(page.url()).toContain('checkout.stripe.com');
   });
 });
+
+// Sin beforeEach: contexto fresco → localStorage vacío → carrito vacío.
+test.describe('Checkout — carrito vacío', () => {
+  test('el aviso está oculto al cargar y aparece al intentar pagar', async ({ page }) => {
+    await page.goto('/checkout');
+    const aviso = page.locator('#co-empty-msg');
+
+    // Al cargar no debe verse (regresión: aparecía nada más entrar)
+    await expect(aviso).toBeHidden();
+
+    // Intentar pagar sin tarros → el aviso aparece
+    await page.getByTestId('checkout-submit-btn').click();
+    await expect(aviso).toBeVisible();
+    await expect(aviso).toContainText('Selecciona al menos un tarro');
+  });
+});

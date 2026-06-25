@@ -1,0 +1,24 @@
+---
+// Mensaje de feedback unificado (badge tintado con icono SVG).
+// Para casos estáticos; los dinámicos aplican las clases .feedback--* por JS.
+// Estilos en global.css (.feedback / .feedback--success|error|info).
+interface Props {
+  kind: 'success' | 'error' | 'info';
+  id?: string;
+  class?: string;
+  [key: string]: unknown;
+}
+const { kind, id, class: extraClass, ...rest } = Astro.props;
+// Error = anuncio inmediato (alert); éxito/info = polite (status).
+const role = kind === 'error' ? 'alert' : 'status';
+---
+
+<div
+  id={id}
+  class:list={['feedback', `feedback--${kind}`, extraClass]}
+  role={role}
+  aria-live="polite"
+  {...rest}
+>
+  <slot />
+</div>
