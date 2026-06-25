@@ -285,10 +285,11 @@ const checkoutConfig = {
         if (subtotalEl) subtotalEl.textContent = sub > 0 ? fmtEur(sub) : '—';
         if (summarySubEl) summarySubEl.textContent = sub > 0 ? fmtEur(sub) : '—';
 
-        var emptyMsg = document.getElementById('co-empty-msg');
-        if (emptyMsg) emptyMsg.style.display = totalItems() === 0 ? 'flex' : 'none';
-
+        // El aviso de carrito vacío NO se muestra al cargar; solo al intentar
+        // pagar sin tarros (ver submit handler). Aquí solo se OCULTA al añadir.
         if (totalItems() > 0) {
+          var emptyMsg = document.getElementById('co-empty-msg');
+          if (emptyMsg) emptyMsg.style.display = 'none';
           var productsEl2 = document.getElementById('co-products');
           if (productsEl2) productsEl2.classList.remove('cart-empty-highlight');
         }
@@ -525,6 +526,8 @@ const checkoutConfig = {
               .map(function (p) { return { priceId: p.priceId, quantity: qtys[p.priceId] }; });
 
             if (!items.length) {
+              var emptyMsg = document.getElementById('co-empty-msg');
+              if (emptyMsg) emptyMsg.style.display = 'flex';
               var productsEl = document.getElementById('co-products');
               if (productsEl) {
                 productsEl.classList.add('cart-empty-highlight');

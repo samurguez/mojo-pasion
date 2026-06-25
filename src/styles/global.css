@@ -46,7 +46,7 @@ body {
    clases por JS en mensajes que cambian de estado en runtime (zona, cf-status). */
 .feedback {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 0.75rem;
   padding: 0.7rem 1rem;
@@ -66,7 +66,6 @@ body {
   flex-shrink: 0;
   width: 1.05em;
   height: 1.05em;
-  margin-top: 0.05em;
   background-color: currentColor;
   -webkit-mask: center / contain no-repeat;
   mask: center / contain no-repeat;
