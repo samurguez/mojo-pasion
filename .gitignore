@@ -15,8 +15,8 @@ pnpm-debug.log*
 
 
 # environment variables
-.env
-.env.production
+.env*
+!.env*.example
 
 # Playwright
 test-results/
