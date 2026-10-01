@@ -3,8 +3,22 @@ name: E2E Tests
 on:
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 6 * * *'
+  # AQUÍ VIVIÓ UN CRON DIARIO (`0 6 * * *`) y se retira el 1 oct 2026.
+  #
+  # Llevaba meses sin servir para nada: GitHub lo había apagado solo
+  # —`disabled_inactivity`, que es lo que le pasa a un workflow programado en un
+  # repo sin actividad— y sus 25 ejecuciones de septiembre murieron de media en
+  # 54 segundos sin llegar a probar nada.
+  #
+  # Pero seguía ESCRITO, y eso es el problema: un cron apagado por inactividad
+  # RESUCITA solo en cuanto el repo recibe un empuje. Habría vuelto a correr a
+  # diario el día que se tocara este proyecto, sin que nadie lo hubiera pedido.
+  #
+  # Este repo es PÚBLICO, así que sus minutos son gratis y nunca tocaron el cupo
+  # —el que se agotó en septiembre fue el de `planracing`—. Se retira por
+  # higiene, no por coste: una tarea programada que nadie mira es ruido que
+  # algún día se cobra. Cuando el proyecto vuelva a estar vivo, la suite se
+  # lanza desde el PR o a mano.
   workflow_dispatch:
 
 jobs:
